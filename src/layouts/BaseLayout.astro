@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import AmbientBackground from '../components/AmbientBackground.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Free, private, client-side web tools.' } = Astro.props;
+---
+
+<html lang="en" data-theme="tools-dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} — tools.florianabry.me</title>
+  </head>
+  <body class="min-h-screen flex flex-col bg-base-100 text-base-content">
+    <AmbientBackground />
+    <Navbar />
+    <main class="relative z-10 flex-1 w-full max-w-4xl mx-auto px-6 py-10">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

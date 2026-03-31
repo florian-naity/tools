@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL \"https://api.github.com/repos/nayuki/QR-Code-generator/contents\")",
+      "Bash(curl -sL \"https://api.github.com/repos/nayuki/QR-Code-generator/contents/typescript-javascript\")",
+      "Bash(npm show:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}

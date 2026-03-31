@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolCard from '../components/ToolCard.astro';
+
+const tools = [
+  {
+    title: 'QR Code Generator',
+    description: 'Generate a QR code from any text or URL and download it as a PNG.',
+    href: '/qr-generator',
+    icon: '⬛',
+  },
+  {
+    title: 'QR Code Reader',
+    description: 'Upload an image containing a QR code and extract the encoded text.',
+    href: '/qr-reader',
+    icon: '🔍',
+  },
+  {
+    title: 'Images to PDF',
+    description: 'Combine images into a single PDF. Drag to reorder, choose page size.',
+    href: '/images-to-pdf',
+    icon: '🖼️',
+  },
+  {
+    title: 'PDF to Images',
+    description: 'Export each page of a PDF as PNG or JPG, downloaded as a ZIP.',
+    href: '/pdf-to-images',
+    icon: '📄',
+  },
+  {
+    title: 'Reorder & Delete Pages',
+    description: 'Drag pages to reorder or remove them, then save the result.',
+    href: '/reorder-pdf',
+    icon: '✂️',
+  },
+  {
+    title: 'Merge PDFs',
+    description: 'Combine multiple PDF files into one, in the order you choose.',
+    href: '/merge-pdf',
+    icon: '📎',
+  },
+  {
+    title: 'Excel Viewer / Editor',
+    description: 'Open, view and edit .xlsx files in your browser, then download the result.',
+    href: '/excel-editor',
+    icon: '📊',
+    badge: 'coming soon',
+  },
+  {
+    title: 'Excel to CSV',
+    description: 'Convert any sheet of an Excel file to a plain CSV download.',
+    href: '/excel-to-csv',
+    icon: '📋',
+    badge: 'coming soon',
+  },
+  {
+    title: 'Examiner Tracker',
+    description: 'Track productivity and goals as a parent examiner. Data saved to your Google Drive.',
+    href: '/examiner-tracker',
+    icon: '🎯',
+    badge: 'coming soon',
+  },
+];
+---
+
+<BaseLayout title="Tools" description="Free, private, client-side web tools by Florian Abry.">
+  <div class="mb-10">
+    <h1 class="text-3xl font-bold text-base-content">
+      Tools <span class="text-primary">.</span>
+    </h1>
+    <p class="mt-2 text-base-content/60 text-sm max-w-lg">
+      A collection of small utilities that run entirely in your browser.
+      Nothing is uploaded to any server.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {tools.map(tool => (
+      <ToolCard {...tool} />
+    ))}
+  </div>
+</BaseLayout>

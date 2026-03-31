@@ -1,0 +1,156 @@
+---
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+---
+
+<div id={id} class="thumbnail-grid grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 min-h-24" data-grid-id={id}>
+</div>
+
+<style>
+  .thumb-card {
+    cursor: grab;
+    user-select: none;
+  }
+  .thumb-card.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+  }
+  .thumb-card.drag-over {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  export interface ThumbItem {
+    id: string;
+    label: string;
+    src?: string;       // data URL or object URL for <img>
+    canvas?: HTMLCanvasElement; // alternative to src
+  }
+
+  // Registry so pages can call addItem / getOrder / clear per grid instance
+  const grids = new Map<string, ThumbnailGridController>();
+
+  class ThumbnailGridController {
+    private container: HTMLDivElement;
+    private items: ThumbItem[] = [];
+    private dragSrcId: string | null = null;
+
+    constructor(gridId: string) {
+      this.container = document.getElementById(gridId) as HTMLDivElement;
+    }
+
+    addItem(item: ThumbItem) {
+      this.items.push(item);
+      this.renderCard(item);
+    }
+
+    clear() {
+      this.items = [];
+      this.container.innerHTML = '';
+    }
+
+    getOrder(): ThumbItem[] {
+      // Return items in current DOM order
+      const cards = this.container.querySelectorAll<HTMLDivElement>('.thumb-card');
+      return Array.from(cards).map(card => {
+        return this.items.find(i => i.id === card.dataset.itemId)!;
+      }).filter(Boolean);
+    }
+
+    private renderCard(item: ThumbItem) {
+      const card = document.createElement('div');
+      card.className = 'thumb-card bg-base-300 rounded-lg overflow-hidden flex flex-col border border-base-300 hover:border-primary/40 transition-colors relative group';
+      card.draggable = true;
+      card.dataset.itemId = item.id;
+
+      // Preview
+      const preview = document.createElement('div');
+      preview.className = 'aspect-[3/4] bg-base-200 flex items-center justify-center overflow-hidden';
+
+      if (item.canvas) {
+        const img = document.createElement('img');
+        img.src = item.canvas.toDataURL();
+        img.className = 'w-full h-full object-contain';
+        preview.appendChild(img);
+      } else if (item.src) {
+        const img = document.createElement('img');
+        img.src = item.src;
+        img.className = 'w-full h-full object-contain';
+        preview.appendChild(img);
+      }
+
+      // Label
+      const label = document.createElement('p');
+      label.className = 'text-xs text-base-content/50 text-center py-1.5 px-1 truncate';
+      label.textContent = item.label;
+
+      // Remove button
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'absolute top-1 right-1 w-5 h-5 rounded-full bg-error/80 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity leading-none';
+      removeBtn.textContent = '✕';
+      removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.removeItem(item.id);
+      });
+
+      card.appendChild(preview);
+      card.appendChild(label);
+      card.appendChild(removeBtn);
+
+      // Drag events
+      card.addEventListener('dragstart', () => {
+        this.dragSrcId = item.id;
+        card.classList.add('dragging');
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        this.container.querySelectorAll('.thumb-card').forEach(c => c.classList.remove('drag-over'));
+      });
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (this.dragSrcId !== item.id) card.classList.add('drag-over');
+      });
+      card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        if (this.dragSrcId && this.dragSrcId !== item.id) {
+          const srcCard = this.container.querySelector(`[data-item-id="${this.dragSrcId}"]`);
+          if (srcCard) {
+            const cards = Array.from(this.container.children);
+            const srcIdx = cards.indexOf(srcCard as Element);
+            const dstIdx = cards.indexOf(card);
+            if (srcIdx < dstIdx) {
+              this.container.insertBefore(srcCard, card.nextSibling);
+            } else {
+              this.container.insertBefore(srcCard, card);
+            }
+          }
+        }
+      });
+
+      this.container.appendChild(card);
+    }
+
+    private removeItem(id: string) {
+      this.items = this.items.filter(i => i.id !== id);
+      const card = this.container.querySelector(`[data-item-id="${id}"]`);
+      card?.remove();
+      this.container.dispatchEvent(new CustomEvent('grid:changed', { bubbles: true }));
+    }
+  }
+
+  // Auto-init all grids on the page
+  document.querySelectorAll<HTMLDivElement>('.thumbnail-grid').forEach(el => {
+    const id = el.dataset.gridId!;
+    grids.set(id, new ThumbnailGridController(id));
+  });
+
+  // Expose globally so page scripts can use them
+  (window as any).__thumbGrids = grids;
+  (window as any).ThumbnailGridController = ThumbnailGridController;
+</script>

@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DropZone from '../components/DropZone.astro';
+import ThumbnailGrid from '../components/ThumbnailGrid.astro';
+---
+
+<BaseLayout title="Reorder & Delete PDF Pages" description="Reorder or delete pages in a PDF. Runs entirely in your browser.">
+  <div class="mb-8">
+    <a href="/" class="text-sm text-base-content/40 hover:text-primary transition-colors">← All Tools</a>
+    <h1 class="text-2xl font-bold mt-3">Reorder & Delete Pages</h1>
+    <p class="text-sm text-base-content/60 mt-1">Drag pages to reorder, click ✕ to delete, then download the result. Runs entirely in your browser.</p>
+  </div>
+
+  <div class="flex flex-col gap-6">
+
+    <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a PDF or drag & drop" />
+
+    <div id="editor" class="hidden flex flex-col gap-4">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <p id="page-count" class="text-sm text-base-content/50"></p>
+        <div class="flex gap-2">
+          <button id="reset-btn" class="btn btn-ghost btn-xs text-base-content/40">Reset</button>
+          <button id="generate-btn" class="btn btn-primary btn-sm">Download PDF</button>
+        </div>
+      </div>
+
+      <div id="loading-row" class="hidden flex items-center gap-3 text-sm text-base-content/50">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span id="loading-label">Rendering thumbnails…</span>
+      </div>
+
+      <ThumbnailGrid id="page-grid" />
+
+      <p id="gen-status" class="text-sm text-base-content/50 text-center hidden"></p>
+    </div>
+
+  </div>
+
+  <p class="mt-6 text-xs text-base-content/30">
+    Powered by <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0) and <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary" target="_blank" rel="noopener">pdf-lib</a> (MIT).
+  </p>
+</BaseLayout>
+
+<script>
+  import * as pdfjsLib from 'pdfjs-dist';
+  import { PDFDocument } from 'pdf-lib';
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.mjs';
+
+  const editor = document.getElementById('editor') as HTMLDivElement;
+  const pageCount = document.getElementById('page-count') as HTMLParagraphElement;
+  const generateBtn = document.getElementById('generate-btn') as HTMLButtonElement;
+  const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
+  const genStatus = document.getElementById('gen-status') as HTMLParagraphElement;
+  const loadingRow = document.getElementById('loading-row') as HTMLDivElement;
+  const loadingLabel = document.getElementById('loading-label') as HTMLSpanElement;
+
+  let originalBytes: ArrayBuffer | null = null;
+  let originalPdf: pdfjsLib.PDFDocumentProxy | null = null;
+
+  function getGrid() {
+    return (window as any).__thumbGrids?.get('page-grid');
+  }
+
+  function updateCount() {
+    const grid = getGrid();
+    const n = grid?.getOrder().length ?? 0;
+    pageCount.textContent = `${n} page${n !== 1 ? 's' : ''}`;
+  }
+
+  async function loadPdf(bytes: ArrayBuffer) {
+    originalBytes = bytes;
+    originalPdf = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+
+    editor.classList.remove('hidden');
+    loadingRow.classList.remove('hidden');
+
+    const grid = getGrid();
+    grid.clear();
+
+    const total = originalPdf.numPages;
+    for (let i = 1; i <= total; i++) {
+      loadingLabel.textContent = `Rendering page ${i} of ${total}…`;
+      const page = await originalPdf.getPage(i);
+      const vp = page.getViewport({ scale: 0.35 });
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width; canvas.height = vp.height;
+      await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise;
+      grid.addItem({ id: `page-${i}`, label: `Page ${i}`, canvas, pageIndex: i - 1 });
+    }
+
+    loadingRow.classList.add('hidden');
+    updateCount();
+  }
+
+  document.addEventListener('dropzone:files', async (e: Event) => {
+    const file = (e as CustomEvent<FileList>).detail[0];
+    if (!file || file.type !== 'application/pdf') return;
+    const bytes = await file.arrayBuffer();
+    await loadPdf(bytes);
+  });
+
+  document.getElementById('page-grid')!.addEventListener('grid:changed', updateCount);
+
+  resetBtn.addEventListener('click', async () => {
+    if (originalBytes) await loadPdf(originalBytes);
+  });
+
+  generateBtn.addEventListener('click', async () => {
+    if (!originalBytes) return;
+    const grid = getGrid();
+    const ordered = grid.getOrder();
+    if (!ordered.length) return;
+
+    generateBtn.disabled = true;
+    genStatus.textContent = 'Building PDF…';
+    genStatus.classList.remove('hidden');
+
+    try {
+      const srcDoc = await PDFDocument.load(originalBytes);
+      const newDoc = await PDFDocument.create();
+      const pageIndices = ordered.map((item: any) => item.pageIndex as number);
+      const copied = await newDoc.copyPages(srcDoc, pageIndices);
+      copied.forEach(p => newDoc.addPage(p));
+
+      const pdfBytes = await newDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'reordered.pdf'; a.click();
+      URL.revokeObjectURL(url);
+
+      genStatus.textContent = `Done — ${ordered.length} page${ordered.length !== 1 ? 's' : ''}.`;
+    } catch (err) {
+      genStatus.textContent = 'Error: ' + (err as Error).message;
+    } finally {
+      generateBtn.disabled = false;
+    }
+  });
+</script>

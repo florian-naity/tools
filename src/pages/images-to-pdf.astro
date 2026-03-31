@@ -1,0 +1,222 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DropZone from '../components/DropZone.astro';
+import ThumbnailGrid from '../components/ThumbnailGrid.astro';
+---
+
+<BaseLayout title="Images to PDF" description="Combine images into a PDF. Runs entirely in your browser.">
+  <div class="mb-8">
+    <a href="/" class="text-sm text-base-content/40 hover:text-primary transition-colors">← All Tools</a>
+    <h1 class="text-2xl font-bold mt-3">Images to PDF</h1>
+    <p class="text-sm text-base-content/60 mt-1">Upload images, drag to reorder, then generate a PDF. Runs entirely in your browser.</p>
+  </div>
+
+  <div class="flex flex-col gap-6">
+
+    <!-- Drop zone -->
+    <DropZone id="img-input" accept="image/*" multiple={true} label="Click to upload images or drag & drop" />
+
+    <!-- Grid + controls (shown after upload) -->
+    <div id="editor" class="hidden flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <p id="img-count" class="text-sm text-base-content/50"></p>
+        <button id="add-more" class="btn btn-ghost btn-xs text-base-content/40">+ Add more</button>
+        <input id="add-more-input" type="file" accept="image/*" multiple class="hidden" />
+      </div>
+
+      <ThumbnailGrid id="img-grid" />
+
+      <!-- Page size options -->
+      <div class="card bg-base-200 border border-base-300 p-4 flex flex-col gap-4">
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Page Size</label>
+          <div class="flex gap-3 flex-wrap">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="page-size" value="fit" class="radio radio-primary radio-sm" checked />
+              <span class="text-sm">Fit image (default)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="page-size" value="a4" class="radio radio-primary radio-sm" />
+              <span class="text-sm">A4</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="page-size" value="letter" class="radio radio-primary radio-sm" />
+              <span class="text-sm">Letter</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="margin-row" class="hidden flex flex-col gap-2">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Margin</label>
+          <div class="flex gap-3 flex-wrap">
+            {[0, 10, 20, 40].map(m => (
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="margin" value={m} class="radio radio-primary radio-sm" checked={m === 20} />
+                <span class="text-sm">{m}pt</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <button id="generate-btn" class="btn btn-primary w-full">Generate PDF</button>
+      <p id="gen-status" class="text-sm text-base-content/50 text-center hidden"></p>
+    </div>
+
+  </div>
+
+  <p class="mt-6 text-xs text-base-content/30">
+    Powered by <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary" target="_blank" rel="noopener">pdf-lib</a> (MIT).
+  </p>
+</BaseLayout>
+
+<script>
+  import { PDFDocument } from 'pdf-lib';
+
+  const editor = document.getElementById('editor') as HTMLDivElement;
+  const imgCount = document.getElementById('img-count') as HTMLParagraphElement;
+  const generateBtn = document.getElementById('generate-btn') as HTMLButtonElement;
+  const genStatus = document.getElementById('gen-status') as HTMLParagraphElement;
+  const marginRow = document.getElementById('margin-row') as HTMLDivElement;
+  const addMore = document.getElementById('add-more') as HTMLButtonElement;
+  const addMoreInput = document.getElementById('add-more-input') as HTMLInputElement;
+
+  let itemCounter = 0;
+
+  function getGrid() {
+    return (window as any).__thumbGrids?.get('img-grid');
+  }
+
+  function updateCount() {
+    const grid = getGrid();
+    if (!grid) return;
+    const n = grid.getOrder().length;
+    imgCount.textContent = `${n} image${n !== 1 ? 's' : ''}`;
+    if (n === 0) editor.classList.add('hidden');
+  }
+
+  function addFiles(files: FileList) {
+    editor.classList.remove('hidden');
+    const grid = getGrid();
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const id = `img-${++itemCounter}`;
+      const src = URL.createObjectURL(file);
+      grid.addItem({ id, label: file.name, src, file });
+    });
+    updateCount();
+  }
+
+  document.addEventListener('dropzone:files', (e: Event) => {
+    const ce = e as CustomEvent<FileList>;
+    addFiles(ce.detail);
+  });
+
+  document.getElementById('img-grid')!.addEventListener('grid:changed', updateCount);
+
+  addMore.addEventListener('click', () => addMoreInput.click());
+  addMoreInput.addEventListener('change', () => {
+    if (addMoreInput.files?.length) addFiles(addMoreInput.files);
+  });
+
+  document.querySelectorAll('input[name="page-size"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const val = (document.querySelector('input[name="page-size"]:checked') as HTMLInputElement)?.value;
+      marginRow.classList.toggle('hidden', val === 'fit');
+    });
+  });
+
+  generateBtn.addEventListener('click', async () => {
+    const grid = getGrid();
+    const ordered = grid.getOrder();
+    if (!ordered.length) return;
+
+    generateBtn.disabled = true;
+    genStatus.textContent = 'Generating PDF…';
+    genStatus.classList.remove('hidden');
+
+    const pageSize = (document.querySelector('input[name="page-size"]:checked') as HTMLInputElement)?.value ?? 'fit';
+    const margin = parseInt((document.querySelector('input[name="margin"]:checked') as HTMLInputElement)?.value ?? '20');
+
+    const A4 = [595, 842] as [number, number];
+    const LETTER = [612, 792] as [number, number];
+
+    // Normalize EXIF orientation by drawing through a canvas.
+    // Browsers apply EXIF rotation in drawImage(), so the canvas output
+    // is always correctly oriented regardless of the original JPEG metadata.
+    async function normalizeOrientation(src: string): Promise<{ bytes: ArrayBuffer; width: number; height: number }> {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d')!;
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob(blob => {
+            if (!blob) { reject(new Error('Canvas toBlob failed')); return; }
+            blob.arrayBuffer().then(buf => resolve({ bytes: buf, width: img.naturalWidth, height: img.naturalHeight }));
+          }, 'image/png');
+        };
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    try {
+      const pdfDoc = await PDFDocument.create();
+
+      for (const item of ordered) {
+        // Draw through canvas to normalize EXIF orientation, embed as PNG
+        const { bytes, width, height } = await normalizeOrientation(item.src);
+        let embeddedImg;
+        try {
+          embeddedImg = await pdfDoc.embedPng(bytes);
+          // Override dimensions with canvas-reported values (post-rotation)
+          (embeddedImg as any).width = width;
+          (embeddedImg as any).height = height;
+        } catch {
+          genStatus.textContent = `Could not embed image: ${item.label}`;
+          generateBtn.disabled = false;
+          return;
+        }
+
+        let pageW: number, pageH: number, imgX: number, imgY: number, imgW: number, imgH: number;
+
+        if (pageSize === 'fit') {
+          pageW = embeddedImg.width;
+          pageH = embeddedImg.height;
+          imgX = 0; imgY = 0;
+          imgW = pageW; imgH = pageH;
+        } else {
+          [pageW, pageH] = pageSize === 'a4' ? A4 : LETTER;
+          const drawW = pageW - margin * 2;
+          const drawH = pageH - margin * 2;
+          const scale = Math.min(drawW / embeddedImg.width, drawH / embeddedImg.height);
+          imgW = embeddedImg.width * scale;
+          imgH = embeddedImg.height * scale;
+          imgX = (pageW - imgW) / 2;
+          imgY = (pageH - imgH) / 2;
+        }
+
+        const page = pdfDoc.addPage([pageW, pageH]);
+        page.drawImage(embeddedImg, { x: imgX, y: imgY, width: imgW, height: imgH });
+      }
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'images.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      genStatus.textContent = `Done — ${ordered.length} page${ordered.length !== 1 ? 's' : ''} generated.`;
+    } catch (err) {
+      genStatus.textContent = 'Error: ' + (err as Error).message;
+    } finally {
+      generateBtn.disabled = false;
+    }
+  });
+</script>

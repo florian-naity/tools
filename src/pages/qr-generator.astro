@@ -1,0 +1,234 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="QR Code Generator"
+  description="Generate a customized QR code from any text or URL. Runs entirely in your browser."
+>
+  <div class="mb-8">
+    <a href="/" class="text-sm text-base-content/40 hover:text-primary transition-colors">← All Tools</a>
+    <h1 class="text-2xl font-bold mt-3">QR Code Generator</h1>
+    <p class="text-sm text-base-content/60 mt-1">Customize and download a QR code. Runs entirely in your browser.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Options panel -->
+    <div class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-5">
+
+      <!-- Content -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Text or URL</label>
+        <textarea
+          id="qr-input"
+          class="textarea textarea-bordered bg-base-100 border-base-300 focus:border-primary resize-none h-24 text-sm"
+          placeholder="https://example.com"
+        ></textarea>
+      </div>
+
+      <!-- Dot style -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Dot Style</label>
+        <div class="flex flex-wrap gap-2" id="dot-style-group">
+          {['square', 'rounded', 'dots', 'extra-rounded'].map((style, i) => (
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="radio"
+                name="dot-style"
+                value={style}
+                class="radio radio-primary radio-sm"
+                checked={i === 0}
+              />
+              <span class="text-sm capitalize">{style.replace('-', ' ')}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <!-- Colors row -->
+      <div class="flex gap-4 flex-wrap">
+        <div class="flex flex-col gap-2 flex-1 min-w-28">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Dot Color</label>
+          <div class="flex items-center gap-2">
+            <input id="dot-color" type="color" value="#1c1917" class="w-10 h-10 rounded cursor-pointer border border-base-300 bg-transparent" />
+            <span id="dot-color-label" class="text-xs text-base-content/40 font-mono">#1c1917</span>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2 flex-1 min-w-28">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Corner Color</label>
+          <div class="flex items-center gap-2">
+            <input id="corner-color" type="color" value="#1c1917" class="w-10 h-10 rounded cursor-pointer border border-base-300 bg-transparent" />
+            <span id="corner-color-label" class="text-xs text-base-content/40 font-mono">#1c1917</span>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2 flex-1 min-w-28">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Background</label>
+          <div class="flex items-center gap-2">
+            <input id="bg-color" type="color" value="#fafaf9" class="w-10 h-10 rounded cursor-pointer border border-base-300 bg-transparent" />
+            <span id="bg-color-label" class="text-xs text-base-content/40 font-mono">#fafaf9</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logo upload -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Center Logo <span class="normal-case font-normal">(PNG or SVG)</span></label>
+        <div class="flex items-center gap-3">
+          <label class="btn btn-outline btn-sm cursor-pointer">
+            Upload logo
+            <input id="logo-input" type="file" accept="image/png,image/svg+xml" class="hidden" />
+          </label>
+          <span id="logo-name" class="text-xs text-base-content/40">No file selected</span>
+          <button id="logo-clear" class="btn btn-ghost btn-xs text-base-content/30 hidden">✕ Remove</button>
+        </div>
+        <p class="text-xs text-base-content/30">ECL will be set to High automatically when a logo is used.</p>
+      </div>
+
+      <!-- ECL + Size -->
+      <div class="flex gap-4 flex-wrap">
+        <div class="flex flex-col gap-2 flex-1 min-w-36">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Error Correction</label>
+          <select id="qr-ecl" class="select select-bordered bg-base-100 border-base-300 text-sm">
+            <option value="L">Low — 7%</option>
+            <option value="M" selected>Medium — 15%</option>
+            <option value="Q">Quartile — 25%</option>
+            <option value="H">High — 30%</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-2 flex-1 min-w-28">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Size (px)</label>
+          <input id="qr-size" type="number" min="128" max="1024" value="300" class="input input-bordered bg-base-100 border-base-300 text-sm" />
+        </div>
+      </div>
+
+      <button id="qr-generate" class="btn btn-primary w-full">Generate</button>
+    </div>
+
+    <!-- Preview panel -->
+    <div class="card bg-base-200 border border-base-300 p-6 flex flex-col items-center justify-center gap-4 min-h-64">
+      <div id="qr-output" class="hidden flex flex-col items-center gap-4">
+        <div id="qr-canvas-container" class="rounded overflow-hidden"></div>
+        <div class="flex gap-2">
+          <button id="qr-download-png" class="btn btn-primary btn-sm">Download PNG</button>
+          <button id="qr-download-svg" class="btn btn-outline btn-sm">Download SVG</button>
+        </div>
+      </div>
+      <p id="qr-placeholder" class="text-sm text-base-content/30 text-center">Your QR code will appear here.</p>
+      <p id="qr-error" class="hidden text-sm text-error text-center"></p>
+    </div>
+
+  </div>
+
+  <p class="mt-6 text-xs text-base-content/30">
+    Powered by <a href="https://github.com/kozakdenys/qr-code-styling" class="underline hover:text-primary" target="_blank" rel="noopener">qr-code-styling</a> (MIT).
+  </p>
+</BaseLayout>
+
+<script>
+  import QRCodeStyling from 'qr-code-styling';
+
+  const input = document.getElementById('qr-input') as HTMLTextAreaElement;
+  const eclSelect = document.getElementById('qr-ecl') as HTMLSelectElement;
+  const sizeInput = document.getElementById('qr-size') as HTMLInputElement;
+  const generateBtn = document.getElementById('qr-generate') as HTMLButtonElement;
+  const container = document.getElementById('qr-canvas-container') as HTMLDivElement;
+  const output = document.getElementById('qr-output') as HTMLDivElement;
+  const placeholder = document.getElementById('qr-placeholder') as HTMLParagraphElement;
+  const errorEl = document.getElementById('qr-error') as HTMLParagraphElement;
+  const downloadPng = document.getElementById('qr-download-png') as HTMLButtonElement;
+  const downloadSvg = document.getElementById('qr-download-svg') as HTMLButtonElement;
+  const logoInput = document.getElementById('logo-input') as HTMLInputElement;
+  const logoName = document.getElementById('logo-name') as HTMLSpanElement;
+  const logoClear = document.getElementById('logo-clear') as HTMLButtonElement;
+  const dotColorInput = document.getElementById('dot-color') as HTMLInputElement;
+  const dotColorLabel = document.getElementById('dot-color-label') as HTMLSpanElement;
+  const cornerColorInput = document.getElementById('corner-color') as HTMLInputElement;
+  const cornerColorLabel = document.getElementById('corner-color-label') as HTMLSpanElement;
+  const bgColorInput = document.getElementById('bg-color') as HTMLInputElement;
+  const bgColorLabel = document.getElementById('bg-color-label') as HTMLSpanElement;
+
+  let logoDataUrl: string | undefined = undefined;
+  let qrCode: InstanceType<typeof QRCodeStyling> | null = null;
+
+  // Sync color labels
+  dotColorInput.addEventListener('input', () => { dotColorLabel.textContent = dotColorInput.value; });
+  cornerColorInput.addEventListener('input', () => { cornerColorLabel.textContent = cornerColorInput.value; });
+  bgColorInput.addEventListener('input', () => { bgColorLabel.textContent = bgColorInput.value; });
+
+  // Logo handling
+  logoInput.addEventListener('change', () => {
+    const file = logoInput.files?.[0];
+    if (!file) return;
+    logoName.textContent = file.name;
+    logoClear.classList.remove('hidden');
+    eclSelect.value = 'H'; // force high ECL when logo is present
+    const reader = new FileReader();
+    reader.onload = (e) => { logoDataUrl = e.target?.result as string; };
+    reader.readAsDataURL(file);
+  });
+
+  logoClear.addEventListener('click', () => {
+    logoInput.value = '';
+    logoDataUrl = undefined;
+    logoName.textContent = 'No file selected';
+    logoClear.classList.add('hidden');
+  });
+
+  function getDotStyle(): string {
+    const checked = document.querySelector('input[name="dot-style"]:checked') as HTMLInputElement;
+    return checked?.value ?? 'square';
+  }
+
+  function generate() {
+    const text = input.value.trim();
+    if (!text) {
+      showError('Please enter some text or a URL.');
+      return;
+    }
+
+    const size = Math.min(1024, Math.max(128, parseInt(sizeInput.value) || 300));
+    const ecl = eclSelect.value as 'L' | 'M' | 'Q' | 'H';
+    const dotStyle = getDotStyle() as any;
+    const dotColor = dotColorInput.value;
+    const cornerColor = cornerColorInput.value;
+    const bgColor = bgColorInput.value;
+
+    // Clear previous
+    container.innerHTML = '';
+
+    qrCode = new QRCodeStyling({
+      width: size,
+      height: size,
+      data: text,
+      image: logoDataUrl,
+      qrOptions: { errorCorrectionLevel: ecl },
+      dotsOptions: { type: dotStyle, color: dotColor },
+      cornersSquareOptions: { type: dotStyle === 'square' ? 'square' : 'extra-rounded', color: cornerColor },
+      cornersDotOptions: { type: dotStyle === 'square' ? 'square' : 'dot', color: cornerColor },
+      backgroundOptions: { color: bgColor },
+      imageOptions: { crossOrigin: 'anonymous', margin: 6, imageSize: 0.3 },
+    });
+
+    qrCode.append(container);
+
+    output.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+    errorEl.classList.add('hidden');
+  }
+
+  function showError(msg: string) {
+    output.classList.add('hidden');
+    placeholder.classList.add('hidden');
+    errorEl.textContent = msg;
+    errorEl.classList.remove('hidden');
+  }
+
+  generateBtn.addEventListener('click', generate);
+  input.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generate(); }
+  });
+
+  downloadPng.addEventListener('click', () => qrCode?.download({ name: 'qrcode', extension: 'png' }));
+  downloadSvg.addEventListener('click', () => qrCode?.download({ name: 'qrcode', extension: 'svg' }));
+</script>

@@ -1,0 +1,27 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  icon: string;
+  badge?: string;
+}
+
+const { title, description, href, icon, badge } = Astro.props;
+---
+
+<a
+  href={href}
+  class="group card bg-base-200 border border-base-300 hover:border-primary/50 hover:bg-base-300 transition-all duration-200 p-6 flex flex-col gap-3"
+>
+  <div class="flex items-start justify-between">
+    <span class="text-3xl">{icon}</span>
+    {badge && (
+      <span class="badge badge-ghost text-xs text-base-content/50">{badge}</span>
+    )}
+  </div>
+  <div>
+    <h2 class="font-semibold text-base-content group-hover:text-primary transition-colors">{title}</h2>
+    <p class="text-sm text-base-content/60 mt-1">{description}</p>
+  </div>
+</a>

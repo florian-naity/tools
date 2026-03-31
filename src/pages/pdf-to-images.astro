@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DropZone from '../components/DropZone.astro';
+---
+
+<BaseLayout title="PDF to Images" description="Convert PDF pages to PNG or JPG images. Runs entirely in your browser.">
+  <div class="mb-8">
+    <a href="/" class="text-sm text-base-content/40 hover:text-primary transition-colors">← All Tools</a>
+    <h1 class="text-2xl font-bold mt-3">PDF to Images</h1>
+    <p class="text-sm text-base-content/60 mt-1">Convert each page of a PDF to an image. Downloaded as a ZIP. Runs entirely in your browser.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Left: upload + options -->
+    <div class="flex flex-col gap-5">
+      <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a PDF or drag & drop" />
+
+      <div id="options" class="hidden card bg-base-200 border border-base-300 p-5 flex flex-col gap-5">
+        <p id="pdf-info" class="text-sm text-base-content/60"></p>
+
+        <!-- Format -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Format</label>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="format" value="png" class="radio radio-primary radio-sm" checked />
+              <span class="text-sm">PNG (lossless)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="format" value="jpg" class="radio radio-primary radio-sm" />
+              <span class="text-sm">JPG</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- JPG quality (shown only for JPG) -->
+        <div id="quality-row" class="hidden flex flex-col gap-2">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+            JPG Quality: <span id="quality-label">85%</span>
+          </label>
+          <input id="quality-slider" type="range" min="60" max="100" value="85" class="range range-primary range-sm" />
+        </div>
+
+        <!-- DPI -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+            Resolution: <span id="dpi-label">150 DPI</span>
+          </label>
+          <input id="dpi-slider" type="range" min="72" max="300" value="150" step="1" class="range range-primary range-sm" />
+          <div class="flex justify-between text-xs text-base-content/30">
+            <span>72</span><span>150</span><span>300</span>
+          </div>
+        </div>
+
+        <button id="convert-btn" class="btn btn-primary w-full">Convert & Download ZIP</button>
+        <div id="progress-row" class="hidden flex flex-col gap-2">
+          <progress id="progress-bar" class="progress progress-primary w-full" value="0" max="100"></progress>
+          <p id="progress-label" class="text-xs text-base-content/50 text-center"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: page preview thumbnails -->
+    <div class="flex flex-col gap-3">
+      <p id="preview-title" class="text-xs font-semibold uppercase tracking-widest text-base-content/50 hidden">Preview</p>
+      <div id="preview-grid" class="grid grid-cols-3 gap-2"></div>
+    </div>
+
+  </div>
+
+  <p class="mt-6 text-xs text-base-content/30">
+    Powered by <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0) and <a href="https://github.com/Stuk/jszip" class="underline hover:text-primary" target="_blank" rel="noopener">JSZip</a> (MIT).
+  </p>
+</BaseLayout>
+
+<script>
+  import * as pdfjsLib from 'pdfjs-dist';
+  import JSZip from 'jszip';
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.mjs';
+
+  const options = document.getElementById('options') as HTMLDivElement;
+  const pdfInfo = document.getElementById('pdf-info') as HTMLParagraphElement;
+  const dpiSlider = document.getElementById('dpi-slider') as HTMLInputElement;
+  const dpiLabel = document.getElementById('dpi-label') as HTMLSpanElement;
+  const qualitySlider = document.getElementById('quality-slider') as HTMLInputElement;
+  const qualityLabel = document.getElementById('quality-label') as HTMLSpanElement;
+  const qualityRow = document.getElementById('quality-row') as HTMLDivElement;
+  const convertBtn = document.getElementById('convert-btn') as HTMLButtonElement;
+  const progressRow = document.getElementById('progress-row') as HTMLDivElement;
+  const progressBar = document.getElementById('progress-bar') as HTMLProgressElement;
+  const progressLabel = document.getElementById('progress-label') as HTMLParagraphElement;
+  const previewGrid = document.getElementById('preview-grid') as HTMLDivElement;
+  const previewTitle = document.getElementById('preview-title') as HTMLParagraphElement;
+
+  let pdfDoc: pdfjsLib.PDFDocumentProxy | null = null;
+
+  dpiSlider.addEventListener('input', () => { dpiLabel.textContent = `${dpiSlider.value} DPI`; });
+  qualitySlider.addEventListener('input', () => { qualityLabel.textContent = `${qualitySlider.value}%`; });
+
+  document.querySelectorAll('input[name="format"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const fmt = (document.querySelector('input[name="format"]:checked') as HTMLInputElement)?.value;
+      qualityRow.classList.toggle('hidden', fmt !== 'jpg');
+    });
+  });
+
+  async function renderPreview(pdf: pdfjsLib.PDFDocumentProxy) {
+    previewGrid.innerHTML = '';
+    previewTitle.classList.remove('hidden');
+    const show = Math.min(pdf.numPages, 6);
+    for (let i = 1; i <= show; i++) {
+      const page = await pdf.getPage(i);
+      const vp = page.getViewport({ scale: 0.3 });
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width; canvas.height = vp.height;
+      await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'rounded overflow-hidden border border-base-300';
+      wrapper.appendChild(canvas);
+      previewGrid.appendChild(wrapper);
+    }
+    if (pdf.numPages > show) {
+      const more = document.createElement('p');
+      more.className = 'col-span-3 text-xs text-base-content/30 text-center';
+      more.textContent = `+${pdf.numPages - show} more pages`;
+      previewGrid.appendChild(more);
+    }
+  }
+
+  document.addEventListener('dropzone:files', async (e: Event) => {
+    const file = (e as CustomEvent<FileList>).detail[0];
+    if (!file || file.type !== 'application/pdf') return;
+
+    const bytes = await file.arrayBuffer();
+    pdfDoc = await pdfjsLib.getDocument({ data: bytes }).promise;
+    pdfInfo.textContent = `${file.name} — ${pdfDoc.numPages} page${pdfDoc.numPages !== 1 ? 's' : ''}`;
+    options.classList.remove('hidden');
+    await renderPreview(pdfDoc);
+  });
+
+  convertBtn.addEventListener('click', async () => {
+    if (!pdfDoc) return;
+
+    const dpi = parseInt(dpiSlider.value);
+    const scale = dpi / 72;
+    const fmt = (document.querySelector('input[name="format"]:checked') as HTMLInputElement)?.value ?? 'png';
+    const quality = parseInt(qualitySlider.value) / 100;
+    const mimeType = fmt === 'jpg' ? 'image/jpeg' : 'image/png';
+    const ext = fmt === 'jpg' ? 'jpg' : 'png';
+
+    convertBtn.disabled = true;
+    progressRow.classList.remove('hidden');
+    const zip = new JSZip();
+    const total = pdfDoc.numPages;
+
+    for (let i = 1; i <= total; i++) {
+      progressLabel.textContent = `Rendering page ${i} of ${total}…`;
+      progressBar.value = ((i - 1) / total) * 100;
+
+      const page = await pdfDoc.getPage(i);
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width; canvas.height = vp.height;
+      await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise;
+
+      const blob: Blob = await new Promise(res => canvas.toBlob(b => res(b!), mimeType, quality));
+      const num = String(i).padStart(3, '0');
+      zip.file(`page-${num}.${ext}`, blob);
+    }
+
+    progressLabel.textContent = 'Building ZIP…';
+    progressBar.value = 100;
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `pdf-images.zip`; a.click();
+    URL.revokeObjectURL(url);
+
+    progressLabel.textContent = `Done — ${total} image${total !== 1 ? 's' : ''} exported.`;
+    convertBtn.disabled = false;
+  });
+</script>
