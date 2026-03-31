@@ -1,0 +1,151 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — Not Found" description="Page not found.">
+  <div class="relative z-10 flex flex-col items-center justify-center min-h-[70vh] gap-6 text-center">
+
+    <canvas id="canvas-404" aria-hidden="true" class="w-full max-w-2xl"></canvas>
+
+    <div class="flex flex-col items-center gap-2">
+      <h1 class="text-2xl font-bold tracking-tight">Page not found</h1>
+      <p id="path-display" class="text-sm text-base-content/40 font-mono bg-base-200 px-3 py-1 rounded"></p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap justify-center">
+      <a href="/" class="btn btn-primary btn-sm">← Go back home</a>
+      <a
+        href="https://github.com/florian-naity/tools/issues"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-outline btn-sm"
+      >Signal an issue ↗</a>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script>
+  document.getElementById('path-display')!.textContent = `Path: ${window.location.pathname}`;
+
+  const canvas = document.getElementById('canvas-404') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const COLOR = '245,158,11';
+
+  const DIGITS: Record<string, number[][]> = {
+    '4': [
+      [1,0,0,1,0],
+      [1,0,0,1,0],
+      [1,1,1,1,0],
+      [0,0,0,1,0],
+      [0,0,0,1,0],
+      [0,0,0,1,0],
+      [0,0,0,1,0],
+    ],
+    '0': [
+      [0,1,1,1,0],
+      [1,0,0,0,1],
+      [1,0,0,0,1],
+      [1,0,0,0,1],
+      [1,0,0,0,1],
+      [1,0,0,0,1],
+      [0,1,1,1,0],
+    ],
+  };
+
+  const CHAR_W = 5;
+  const CHAR_H = 7;
+  const CHAR_GAP = 2;
+  const TEXT = '404';
+  const PADDING_COLS = 3; // empty cols on each side
+  const PADDING_ROWS = 2; // empty rows above/below
+
+  // Total pattern dimensions in grid cells
+  const patternCols = (CHAR_W + CHAR_GAP) * TEXT.length - CHAR_GAP;
+  const totalCols = patternCols + PADDING_COLS * 2;
+  const totalRows = CHAR_H + PADDING_ROWS * 2;
+
+  let spacing = 28;
+  let t = 0;
+
+  function resize() {
+    const availableWidth = canvas.parentElement!.clientWidth;
+    // Scale spacing so pattern fits, max 28 to align with ambient background on wide screens
+    spacing = Math.min(28, Math.floor(availableWidth / totalCols));
+    spacing = Math.max(12, spacing); // floor at 12 for very small screens
+
+    canvas.width = totalCols * spacing;
+    canvas.height = totalRows * spacing;
+  }
+
+  function buildLitSet(): Set<string> {
+    const set = new Set<string>();
+    let colOffset = 0;
+    for (const ch of TEXT) {
+      const pattern = DIGITS[ch];
+      for (let r = 0; r < CHAR_H; r++) {
+        for (let c = 0; c < CHAR_W; c++) {
+          if (pattern[r][c]) {
+            set.add(`${PADDING_COLS + colOffset + c},${PADDING_ROWS + r}`);
+          }
+        }
+      }
+      colOffset += CHAR_W + CHAR_GAP;
+    }
+    return set;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t += 0.022;
+
+    const litSet = buildLitSet();
+
+    for (let row = 0; row < totalRows; row++) {
+      for (let col = 0; col < totalCols; col++) {
+        const x = col * spacing + spacing / 2;
+        const y = row * spacing + spacing / 2;
+        const isLit = litSet.has(`${col},${row}`);
+
+        if (isLit) {
+          const pulse = (Math.sin(t * 2.2 - (col + row) * 0.3) + 1) / 2;
+          const alpha = 0.55 + pulse * 0.45;
+          const radius = Math.max(1.5, spacing * 0.12 + pulse * spacing * 0.07);
+
+          // Glow halo
+          const grd = ctx.createRadialGradient(x, y, 0, x, y, radius * 5);
+          grd.addColorStop(0, `rgba(${COLOR},${0.2 * pulse})`);
+          grd.addColorStop(1, `rgba(${COLOR},0)`);
+          ctx.beginPath();
+          ctx.arc(x, y, radius * 5, 0, Math.PI * 2);
+          ctx.fillStyle = grd;
+          ctx.fill();
+
+          // Dot
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR},${alpha})`;
+          ctx.fill();
+        } else {
+          // Dim grid dot
+          const dist = Math.sqrt((col - totalCols / 2) ** 2 + (row - totalRows / 2) ** 2);
+          const phase = dist * 0.45 - t * 0.5;
+          const pulse = (Math.sin(phase) + 1) / 2;
+          const alpha = 0.03 + pulse * 0.08;
+          const radius = Math.max(0.5, spacing * 0.03 + pulse * spacing * 0.02);
+
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR},${alpha})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  draw();
+  window.addEventListener('resize', () => { resize(); });
+</script>

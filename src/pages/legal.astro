@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Legal Notice" description="Legal notice and impressum for tools.florianabry.me">
+  <div class="mb-8">
+    <a href="/" class="text-sm text-base-content/40 hover:text-primary transition-colors">← Home</a>
+    <h1 class="text-2xl font-bold mt-3">Legal Notice</h1>
+    <p class="text-sm text-base-content/60 mt-1">Impressum / Mentions légales</p>
+  </div>
+
+  <div class="flex flex-col gap-8 max-w-2xl">
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-4">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-base-content/50">Site operator</h2>
+      <div class="text-sm text-base-content/80 flex flex-col gap-1">
+        <p class="font-semibold text-base-content">Florian Abry</p>
+        <p>Germany</p>
+        <p>
+          Contact:
+          <a href="https://florianabry.me/#contact" class="text-primary hover:text-accent transition-colors underline" target="_blank" rel="noopener">
+            florianabry.me/#contact
+          </a>
+        </p>
+      </div>
+      <p class="text-xs text-base-content/30 leading-relaxed">
+        Full address available to authorities upon request via the hosting provider in accordance with §5 TMG (Germany) and LCEN Art. 6 (France).
+      </p>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-4">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-base-content/50">Hosting</h2>
+      <div class="text-sm text-base-content/80 flex flex-col gap-1">
+        <p class="font-semibold text-base-content">OVH SAS</p>
+        <p>2 rue Kellermann</p>
+        <p>59100 Roubaix, France</p>
+        <a href="https://www.ovh.com" class="text-primary hover:text-accent transition-colors underline" target="_blank" rel="noopener">ovh.com</a>
+      </div>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-4">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-base-content/50">Privacy</h2>
+      <p class="text-sm text-base-content/80 leading-relaxed">
+        This website does not collect, store, or transmit any personal data. All tools run entirely in your browser — no files, inputs, or results are sent to any server. No analytics, no cookies, no tracking.
+      </p>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-4">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-base-content/50">Content & Liability</h2>
+      <p class="text-sm text-base-content/80 leading-relaxed">
+        This is a personal, non-commercial website. The tools are provided as-is, free of charge, with no warranty of any kind. The source code is available on <a href="https://github.com/florian-naity/tools" class="text-primary hover:text-accent transition-colors underline" target="_blank" rel="noopener">GitHub</a>.
+      </p>
+    </section>
+
+  </div>
+</BaseLayout>

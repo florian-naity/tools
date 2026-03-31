@@ -1,43 +1,73 @@
-# Astro Starter Kit: Minimal
+# tools.florianabry.me
 
-```sh
-npm create astro@latest -- --template minimal
+A collection of small, self-contained web tools that run entirely in the browser. No file is ever uploaded to a server — all processing happens client-side.
+
+**Live site:** [tools.florianabry.me](https://tools.florianabry.me)
+
+---
+
+## Tools
+
+### PDF
+| Tool | Description |
+|---|---|
+| [Images to PDF](https://tools.florianabry.me/images-to-pdf) | Combine images into a single PDF. Drag to reorder, choose A4/Letter or fit-to-image page size. |
+| [PDF to Images](https://tools.florianabry.me/pdf-to-images) | Export each page of a PDF as PNG or JPG. Resolution slider (72–300 DPI), downloaded as ZIP. |
+| [Reorder & Delete Pages](https://tools.florianabry.me/reorder-pdf) | Drag-and-drop page thumbnail grid to reorder or remove pages, then download the result. |
+| [Merge PDFs](https://tools.florianabry.me/merge-pdf) | Combine multiple PDF files into one in any order. |
+
+### QR Code
+| Tool | Description |
+|---|---|
+| [QR Code Generator](https://tools.florianabry.me/qr-generator) | Generate a customizable QR code — dot style, corner color, background, center logo, PNG/SVG export. |
+| [QR Code Reader](https://tools.florianabry.me/qr-reader) | Upload an image containing a QR code to decode it. |
+
+### Spreadsheets *(coming soon)*
+| Tool | Description |
+|---|---|
+| Excel Viewer / Editor | Open, view and edit `.xlsx` files in your browser, then download the result. |
+| Excel to CSV | Convert any sheet of an Excel file to a `.csv` download. |
+
+### Productivity *(coming soon)*
+| Tool | Description |
+|---|---|
+| Examiner Tracker | Track productivity and goals as a parent examiner. Data stored in your Google Drive via OAuth — no server. |
+
+---
+
+## Stack
+
+- **[Astro](https://astro.build)** — static site generator, output: pure HTML/CSS/JS
+- **[Tailwind CSS v4](https://tailwindcss.com)** + **[DaisyUI v5](https://daisyui.com)** — styling and components
+- **[pdf-lib](https://pdf-lib.js.org)** — create, merge, reorder PDFs
+- **[PDF.js](https://mozilla.github.io/pdf.js/)** — render PDF pages to canvas (with Web Worker)
+- **[JSZip](https://stuk.github.io/jszip/)** — bundle image exports into ZIP
+- **[qr-code-styling](https://github.com/kozakdenys/qr-code-styling)** — QR code generation with styling
+- **[jsQR](https://github.com/cozmo/jsQR)** — QR code decoding
+
+## Privacy
+
+All tools process data entirely in the browser. Files are never uploaded to any server. PDF and image processing runs locally using JavaScript and WebAssembly.
+
+---
+
+## Development
+
+```bash
+npm install       # Install dependencies
+npm run dev       # Start dev server at http://localhost:4321
+npm run build     # Build to ./dist/
+npm run preview   # Preview production build locally
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Deployment
 
-## 🚀 Project Structure
+Pushing to `main` triggers a GitHub Actions workflow that builds the site and deploys `./dist/` to OVH static hosting via FTP.
 
-Inside of your Astro project, you'll see the following folders and files:
+Required repository secrets: `PROD_HOST`, `PROD_USER`, `PROD_PASS`, `PROD_PATH`.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+---
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Issues
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Found a bug or want to suggest a tool? [Open an issue](https://github.com/florian-naity/tools/issues).
