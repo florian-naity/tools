@@ -49,9 +49,9 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 
 ### 1. QR Code Generator
 - Input: text or URL
-- Output: downloadable QR code image (PNG)
-- Library: **qrcodegen** by Nayuki Minase (MIT) — vendored
-- Credit: visible attribution on the page + license comment in file
+- Output: downloadable QR code image (PNG, SVG)
+- Library: **qr-code-styling** (MIT) — via npm
+- Credit: visible attribution on the page
 
 ### 2. QR Code Reader
 - Input: uploaded image file containing a QR code
@@ -86,6 +86,8 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 - Library: **pdf-lib** (MIT) — via npm
 - Detail: see [docs/pdf-tools.md](pdf-tools.md)
 
+## Planned Tools
+
 ### 7. Excel Viewer / Editor
 - Input: uploaded .xlsx / .xls / .ods file
 - Output: rendered spreadsheet, editable in browser, re-downloadable as .xlsx
@@ -118,7 +120,7 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 
 ## Library Policy
 
-- **Vendored** (copied into `public/vendor/`): small single-file libraries used directly in `<script>` tags (jsQR); also PDF.js worker (`pdf.worker.min.mjs`)
+- **Vendored** (copied into `public/vendor/`): small single-file libraries used directly in `<script>` tags (jsQR at `public/vendor/jsQR.js`); also PDF.js worker (`public/vendor/pdf.worker.min.mjs`)
 - **npm** (bundled by Astro/Vite): larger libraries imported as ES modules (pdfjs-dist, pdf-lib, jszip, SheetJS, qr-code-styling)
 - All vendored files retain their original license/copyright comment header
 - Attribution shown on relevant tool pages

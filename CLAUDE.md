@@ -21,16 +21,10 @@ npm run preview    # Preview the built output locally
 ```
 tools/
 ├── public/
-│   └── vendor/            # Vendored JS libraries (with license headers intact)
-│       ├── qrcodegen.js   # Nayuki Minase — MIT
-│       └── jsQR.js        # Cosmo Wolfe — MIT
+│   └── vendor/                    # Vendored JS libraries (with license headers intact)
+│       ├── jsQR.js                # Cosmo Wolfe — MIT
+│       └── pdf.worker.min.mjs    # PDF.js Web Worker — Apache 2.0
 ├── src/
-│   ├── components/
-│   │   ├── Navbar.astro
-│   │   ├── Footer.astro
-│   │   └── ToolCard.astro
-│   ├── layouts/
-│   │   └── BaseLayout.astro
 │   ├── components/
 │   │   ├── Navbar.astro
 │   │   ├── Footer.astro
@@ -38,17 +32,21 @@ tools/
 │   │   ├── AmbientBackground.astro   # Breathing dot grid canvas animation
 │   │   ├── DropZone.astro            # Shared reusable file drop zone
 │   │   └── ThumbnailGrid.astro       # Shared drag-and-drop thumbnail grid
+│   ├── layouts/
+│   │   └── BaseLayout.astro
 │   ├── pages/
 │   │   ├── index.astro               # Tool directory / home
+│   │   ├── 404.astro
+│   │   ├── legal.astro
 │   │   ├── qr-generator.astro
 │   │   ├── qr-reader.astro
 │   │   ├── images-to-pdf.astro
 │   │   ├── pdf-to-images.astro
 │   │   ├── reorder-pdf.astro
 │   │   ├── merge-pdf.astro
-│   │   ├── excel-editor.astro
-│   │   ├── excel-to-csv.astro
-│   │   └── examiner-tracker.astro    # Google OAuth + Drive
+│   │   ├── excel-editor.astro        # planned
+│   │   ├── excel-to-csv.astro        # planned
+│   │   └── examiner-tracker.astro    # planned — Google OAuth + Drive
 │   └── styles/
 │       └── global.css           # Tailwind + DaisyUI theme
 ├── docs/

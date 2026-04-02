@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Privacy Policy" description="Privacy policy (Datenschutzerklärung) for tools.florianabry.me.">
+  <div class="mb-8">
+    <a href="/" class="text-sm text-base-content/40 hover:text-primary transition-colors">← Home</a>
+    <h1 class="text-2xl font-bold mt-3">Privacy Policy</h1>
+    <p class="text-sm text-base-content/60 mt-1">Datenschutzerklärung · Last updated: April 2026</p>
+  </div>
+
+  <div class="flex flex-col gap-6 max-w-2xl text-sm text-base-content/80 leading-relaxed">
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Overview</h2>
+      <p>
+        This website (<strong class="text-base-content">tools.florianabry.me</strong>) provides small, self-contained browser tools. All processing happens locally in your browser — no files, inputs, or results are ever sent to a server. No cookies are set. No analytics or tracking is used.
+      </p>
+      <p>
+        The only technical data processed is your IP address, which is handled by the hosting provider as part of normal server operation (see below).
+      </p>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Controller (Verantwortlicher)</h2>
+      <p>The person responsible for data processing on this website within the meaning of Art. 4(7) GDPR is:</p>
+      <div class="pl-4 border-l border-base-300 flex flex-col gap-0.5 text-base-content">
+        <span class="font-semibold">Florian Abry</span>
+        <span>Munich, Germany</span>
+        <span id="privacy-contact"></span>
+      </div>
+      <p class="text-xs text-base-content/40">Full postal address is available to authorities upon request via the hosting provider in accordance with § 5 TMG.</p>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Hosting & Server Logs</h2>
+      <p>
+        This website is hosted by <strong class="text-base-content">OVH SAS</strong> (2 rue Kellermann, 59100 Roubaix, France). When you visit any page, OVH's web server automatically records the following data in server access logs:
+      </p>
+      <ul class="list-disc list-inside flex flex-col gap-1 pl-2">
+        <li>Your IP address</li>
+        <li>Date and time of the request</li>
+        <li>URL requested</li>
+        <li>HTTP status code and bytes transferred</li>
+        <li>Referrer URL and browser user agent (if sent by your browser)</li>
+      </ul>
+      <p>
+        This logging is technically necessary to serve the website and detect abuse. The legal basis is Art. 6(1)(f) GDPR (legitimate interest in the secure and stable operation of the website). Logs are retained according to OVH's standard retention policy and are not shared or used for any other purpose.
+      </p>
+      <p>
+        A Data Processing Agreement (Auftragsverarbeitungsvertrag, AVV) pursuant to Art. 28 GDPR is in place with OVH. OVH stores and processes data within the European Union.
+        <a href="/legal/avv-ovhcloud.pdf" class="text-primary hover:text-accent underline transition-colors" target="_blank" rel="noopener">View OVH AVV (PDF) ↗</a>
+      </p>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Cookies, Analytics & Tracking</h2>
+      <p>This website does <strong class="text-base-content">not</strong> use:</p>
+      <ul class="list-disc list-inside flex flex-col gap-1 pl-2">
+        <li>Cookies of any kind (session, persistent, or third-party)</li>
+        <li>Web analytics (no Google Analytics, Matomo, or similar)</li>
+        <li>Tracking pixels or browser fingerprinting</li>
+        <li>Advertising networks or retargeting</li>
+        <li>Social media buttons or embeds</li>
+      </ul>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Client-Side Tools</h2>
+      <p>
+        All tools on this site (PDF conversion, QR codes, image processing, etc.) run entirely in your browser using JavaScript. Files you upload or generate are processed in memory on your device and are never transmitted to any server. Closing the browser tab discards all data immediately.
+      </p>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Fonts</h2>
+      <p>
+        This website uses the <strong class="text-base-content">Poppins</strong> typeface, which is self-hosted on this server. No request is made to Google Fonts or any external font service. Your IP address is not transmitted to Google or any third party for the purpose of loading fonts.
+      </p>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Your Rights Under GDPR</h2>
+      <p>Under the GDPR, you have the following rights with respect to your personal data:</p>
+      <ul class="flex flex-col gap-2 pl-2">
+        <li><strong class="text-base-content">Right of access</strong> (Art. 15) — request confirmation of whether and what personal data is held about you.</li>
+        <li><strong class="text-base-content">Right to rectification</strong> (Art. 16) — request correction of inaccurate data.</li>
+        <li><strong class="text-base-content">Right to erasure</strong> (Art. 17) — request deletion of your data where legally permissible.</li>
+        <li><strong class="text-base-content">Right to restriction of processing</strong> (Art. 18) — request that processing be restricted under certain conditions.</li>
+        <li><strong class="text-base-content">Right to data portability</strong> (Art. 20) — receive your data in a structured, machine-readable format.</li>
+        <li><strong class="text-base-content">Right to object</strong> (Art. 21) — object to processing based on legitimate interests.</li>
+      </ul>
+      <p>
+        To exercise any of these rights, contact us at the email address above. Since this site collects no personal data beyond server logs held by OVH, requests may be forwarded to OVH where appropriate.
+      </p>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Right to Lodge a Complaint (Art. 77 GDPR)</h2>
+      <p>
+        You have the right to lodge a complaint with the competent supervisory authority at any time. The data protection authority responsible for Bavaria (where the controller is located) is:
+      </p>
+      <div class="pl-4 border-l border-base-300 flex flex-col gap-0.5">
+        <span class="font-semibold text-base-content">Bayerisches Landesamt für Datenschutzaufsicht (BayLDA)</span>
+        <span>Promenade 18, 91522 Ansbach, Germany</span>
+        <a href="https://www.lda.bayern.de" class="text-primary hover:text-accent underline transition-colors" target="_blank" rel="noopener">lda.bayern.de ↗</a>
+      </div>
+    </section>
+
+    <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">Planned Feature: Examiner Tracker (Google OAuth)</h2>
+      <p>
+        A future tool on this site will allow users to optionally sign in with their Google account to store personal data in their own Google Drive. This tool is not yet live. When it is released, this privacy policy will be updated to cover:
+      </p>
+      <ul class="list-disc list-inside flex flex-col gap-1 pl-2">
+        <li>Google account data processed (name, email address)</li>
+        <li>Data stored in your personal Google Drive <code class="text-xs bg-base-300 px-1 py-0.5 rounded font-mono">appDataFolder</code></li>
+        <li>Google LLC as a data processor and the applicable data transfer mechanisms</li>
+        <li>Consent and withdrawal procedures</li>
+      </ul>
+    </section>
+
+    <p class="text-xs text-base-content/30 pb-4">
+      This privacy policy applies to tools.florianabry.me and was last updated in April 2026.
+    </p>
+
+  </div>
+</BaseLayout>
+
+<script>
+  const u = 'florian.abry';
+  const d = 'gmail.com';
+  const el = document.getElementById('privacy-contact');
+  if (el) {
+    const a = document.createElement('a');
+    a.href = `mailto:${u}@${d}`;
+    a.textContent = `${u}@${d}`;
+    a.className = 'text-primary hover:text-accent underline transition-colors';
+    el.appendChild(document.createTextNode('Email: '));
+    el.appendChild(a);
+  }
+</script>
