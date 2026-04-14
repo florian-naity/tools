@@ -2,6 +2,7 @@
 ---
 
 <canvas id="ambient-background" aria-hidden="true"></canvas>
+<div id="ambient-vignette" aria-hidden="true"></div>
 
 <style>
   #ambient-background {
@@ -12,6 +13,19 @@
     pointer-events: none;
     z-index: 0;
   }
+
+  /* Radial vignette — darkens edges, keeps center clear for content */
+  #ambient-vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(
+      ellipse 75% 65% at 50% 38%,
+      transparent 30%,
+      rgba(28, 25, 23, 0.55) 100%
+    );
+  }
 </style>
 
 <script>
@@ -19,7 +33,8 @@
   const ctx = canvas.getContext('2d')!;
 
   const SPACING = 28;
-  const COLOR = '245,158,11'; // amber-500 RGB
+  const PRIMARY_COLOR = '245,158,11'; // amber-500
+  const ACCENT_COLOR  = '251,146,60'; // orange-400
 
   let t = 0;
   let cols = 0;
@@ -27,32 +42,63 @@
   let offsetX = 0;
   let offsetY = 0;
 
+  // Precomputed random values per dot so sparkle positions are stable
+  let sparkMap: Float32Array | null = null;
+
   function resize() {
-    canvas.width = window.innerWidth;
+    canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
-    cols = Math.floor(canvas.width / SPACING) + 1;
+    cols = Math.floor(canvas.width  / SPACING) + 1;
     rows = Math.floor(canvas.height / SPACING) + 1;
-    offsetX = (canvas.width - (cols - 1) * SPACING) / 2;
+    offsetX = (canvas.width  - (cols - 1) * SPACING) / 2;
     offsetY = (canvas.height - (rows - 1) * SPACING) / 2;
+
+    // Regenerate sparkle map
+    sparkMap = new Float32Array(cols * rows);
+    for (let i = 0; i < sparkMap.length; i++) {
+      sparkMap[i] = Math.random();
+    }
   }
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    t += 0.016;
+    t += 0.014;
+
+    // Secondary ripple origin slowly orbits the center
+    const orbitT = t * 0.22;
+    const ox2 = cols / 2 + Math.cos(orbitT) * (cols * 0.22);
+    const oy2 = rows / 2 + Math.sin(orbitT) * (rows * 0.18);
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const x = offsetX + col * SPACING;
         const y = offsetY + row * SPACING;
-        const dist = Math.sqrt((col - cols / 2) ** 2 + (row - rows / 2) ** 2);
-        const phase = dist * 0.4 - t;
-        const pulse = (Math.sin(phase) + 1) / 2;
-        const alpha = 0.04 + pulse * 0.14;
-        const radius = 0.8 + pulse * 0.6;
+
+        // Primary ripple from center
+        const dist1  = Math.sqrt((col - cols / 2) ** 2 + (row - rows / 2) ** 2);
+        const phase1 = dist1 * 0.4 - t;
+        const pulse1 = (Math.sin(phase1) + 1) / 2;
+
+        // Secondary orbiting ripple
+        const dist2  = Math.sqrt((col - ox2) ** 2 + (row - oy2) ** 2);
+        const phase2 = dist2 * 0.5 - t * 1.4;
+        const pulse2 = (Math.sin(phase2) + 1) / 2;
+
+        // Blend: primary dominates, secondary adds depth
+        const pulse = pulse1 * 0.72 + pulse2 * 0.28;
+
+        const isSpark = sparkMap![row * cols + col] > 0.975; // ~2.5% of dots
+        const alpha  = isSpark
+          ? Math.min(0.55, 0.18 + pulse * 0.37)   // brighter sparkle
+          : 0.04 + pulse * 0.16;
+        const radius = isSpark ? 1.6 + pulse * 1.0 : 0.8 + pulse * 0.65;
+
+        // Alternate color: sparkles use accent orange, normal dots use amber
+        const color = isSpark ? ACCENT_COLOR : PRIMARY_COLOR;
 
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${COLOR},${alpha})`;
+        ctx.fillStyle = `rgba(${color},${alpha.toFixed(3)})`;
         ctx.fill();
       }
     }

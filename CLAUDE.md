@@ -70,21 +70,38 @@ tools/
 
 ### Theme: warm dark (custom DaisyUI theme named `tools-dark`)
 
-| Token | Value |
-|---|---|
-| Background | `#1c1917` (stone-900) |
-| Surface | `#292524` (stone-800) |
-| Border | `#44403c` (stone-700) |
-| Text | `#fafaf9` (stone-50) |
-| Primary accent | `#f59e0b` (amber-500) |
-| Secondary accent | `#fb923c` (orange-400) |
+| Token | Value | Usage |
+|---|---|---|
+| Background | `#1c1917` (stone-900) | Page background |
+| Surface | `#292524` (stone-800) | Cards, panels |
+| Border | `#44403c` (stone-700) | Borders, dividers |
+| Text | `#fafaf9` (stone-50) | Primary text |
+| Primary | `#fbbf24` (amber-400) | CTAs, focus rings, hover states |
+| Secondary | `#a78bfa` (violet-400) | Cool accent counterpoint |
+| Accent | `#fb923c` (orange-400) | Brand colour, section labels, sparkles |
 
-Font: **Poppins** (400, 600, 700) from Google Fonts.
+### Typography
+
+| Role | Font | Weights |
+|---|---|---|
+| Headings (`h1`–`h3`), brand | **Fraunces Variable** (`@fontsource-variable/fraunces`) | variable, `opsz` axis at 144 |
+| Body, UI, labels, descriptions | **Poppins** (`@fontsource/poppins`) | 400, 600, 700 |
+
+The `opsz` axis is pinned to 144 for display use — at large sizes Fraunces opens up its most expressive letterforms.
+Use `.font-display` utility class for explicit Fraunces override outside of heading tags.
 
 ### Component conventions
 - Tool pages use `BaseLayout` with a `title` and `description` prop
 - Each tool page has a privacy notice: *"Your files never leave your device."*
-- Consistent page structure: header → tool card → attribution footer note
+- Consistent page structure: header (`back-link` → `h1` → subtitle) → tool card → attribution footer note
+- Back links use the `.back-link` CSS utility class (animated arrow on hover)
+
+### Animations & transitions
+
+- Page-to-page: Astro `ClientRouter` (view transitions) — smooth fade between pages
+- Page load: `.animate-fade-in-up` utility on hero and section groups with staggered `animation-delay`
+- `.animate-soft-pulse` for ambient indicators (e.g. status pill dot)
+- Ambient background: dual-ripple dot grid with ~2.5% orange sparkle dots and a CSS radial vignette
 
 ## Libraries Per Tool
 

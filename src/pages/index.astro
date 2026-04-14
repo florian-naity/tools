@@ -2,11 +2,15 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolCard from '../components/ToolCard.astro';
 
-const groups = [
+type Tool = { title: string; description: string; href: string; icon: string; badge?: string };
+type Group = { label: string; accent: string; labelColor: string; accentHex: string; tools: Tool[] };
+
+const groups: Group[] = [
   {
     label: 'PDF',
     accent: 'border-orange-500/30',
     labelColor: 'text-orange-400',
+    accentHex: '#fb923c',
     tools: [
       {
         title: 'Images to PDF',
@@ -38,6 +42,7 @@ const groups = [
     label: 'QR Code',
     accent: 'border-primary/30',
     labelColor: 'text-primary',
+    accentHex: '#f59e0b',
     tools: [
       {
         title: 'QR Code Generator',
@@ -57,6 +62,7 @@ const groups = [
     label: 'Spreadsheets',
     accent: 'border-emerald-500/30',
     labelColor: 'text-emerald-400',
+    accentHex: '#34d399',
     tools: [
       {
         title: 'Excel Viewer / Editor',
@@ -78,6 +84,7 @@ const groups = [
     label: 'Productivity',
     accent: 'border-violet-500/30',
     labelColor: 'text-violet-400',
+    accentHex: '#a78bfa',
     tools: [
       {
         title: 'Examiner Tracker',
@@ -89,34 +96,70 @@ const groups = [
     ],
   },
 ];
+
+const totalTools = groups.reduce((n, g) => n + g.tools.filter(t => !t.badge).length, 0);
 ---
 
 <BaseLayout title="Tools" description="Free, private, client-side web tools by Florian Abry.">
-  <div class="mb-10">
-    <h1 class="text-3xl font-bold text-base-content">
-      Tools <span class="text-primary">.</span>
+
+  <!-- ─── Hero ─────────────────────────────────────── -->
+  <div class="mb-14 animate-fade-in-up">
+
+    <!-- Status pill -->
+    <div class="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full bg-base-200 border border-base-300 text-xs text-base-content/50 select-none">
+      <span class="w-1.5 h-1.5 rounded-full bg-primary animate-soft-pulse"></span>
+      <span>{totalTools} tools · runs entirely in your browser</span>
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl font-bold leading-[1.15] tracking-tight">
+      <span class="text-base-content">Small tools,</span><br/>
+      <span class="hero-gradient">big convenience.</span>
     </h1>
-    <p class="mt-2 text-base-content/60 text-sm max-w-lg">
-      A collection of small utilities that run entirely in your browser.
-      Nothing is uploaded to any server.
+
+    <p class="mt-4 text-base-content/55 text-sm max-w-md leading-relaxed">
+      Focused browser utilities for everyday tasks —
+      no uploads, no accounts, no trackers. Everything stays on your device.
     </p>
   </div>
 
-  <div class="flex flex-col gap-10">
-    {groups.map(group => (
-      <section>
-        <div class="flex items-center gap-3 mb-4">
-          <span class={`text-xs font-bold uppercase tracking-widest ${group.labelColor}`}>
+  <!-- ─── Tool groups ───────────────────────────────── -->
+  <div class="flex flex-col gap-12">
+    {groups.map((group, gi) => (
+      <section class="animate-fade-in-up" style={`animation-delay: ${100 + gi * 60}ms;`}>
+
+        <!-- Section label + gradient divider -->
+        <div class="flex items-center gap-3 mb-5">
+          <span
+            class="text-xs font-bold uppercase tracking-widest shrink-0"
+            style={`color: ${group.accentHex};`}
+          >
             {group.label}
           </span>
-          <div class={`flex-1 h-px bg-base-300`}></div>
+          <div
+            class="flex-1 h-px"
+            style={`background: linear-gradient(to right, ${group.accentHex}55, transparent);`}
+          ></div>
         </div>
+
+        <!-- Cards grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {group.tools.map(tool => (
-            <ToolCard {...tool} />
+          {group.tools.map((tool, i) => (
+            <div class="animate-fade-in-up" style={`animation-delay: ${160 + gi * 60 + i * 70}ms;`}>
+              <ToolCard {...tool} accentColor={group.accentHex} />
+            </div>
           ))}
         </div>
       </section>
     ))}
   </div>
+
 </BaseLayout>
+
+<style>
+  .hero-gradient {
+    background: linear-gradient(135deg, #fbbf24 0%, #fb923c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+</style>

@@ -18,7 +18,8 @@ A static website centralizing small, self-contained web tools. Hosted on a subdo
 | Framework | Astro (static output) | Same stack as personal site, builds to pure HTML/CSS/JS |
 | Styling | Tailwind CSS v4 + DaisyUI v5 | Consistent tooling, component library |
 | Theme | Custom warm dark | Distinct from personal site (Nord), tech-y feeling |
-| Font | Poppins (400, 600, 700) | Brand continuity with florianabry.me |
+| Display font | Fraunces Variable (`opsz`) | Expressive editorial serif for headings and brand |
+| Body font | Poppins (400, 600, 700) | Legible UI font for descriptions, labels, body copy |
 | WASM (if needed) | Rust | Preferred over C/Go/Python for WASM targets |
 
 ## Design System
@@ -31,14 +32,16 @@ A static website centralizing small, self-contained web tools. Hosted on a subdo
 | Base-200 | `#292524` | Cards, panels (stone-800) |
 | Base-300 | `#44403c` | Borders, dividers (stone-700) |
 | Base-content | `#fafaf9` | Primary text (stone-50) |
-| Primary | `#f59e0b` | Accents, CTAs, highlights (amber-500) |
+| Primary | `#fbbf24` | CTAs, hover states, focus rings (amber-400) |
 | Primary-content | `#1c1917` | Text on primary bg |
-| Accent | `#fb923c` | Secondary highlights (orange-400) |
+| Secondary | `#a78bfa` | Cool accent counterpoint (violet-400) |
+| Accent | `#fb923c` | Brand colour, section labels (orange-400) |
 | Error | `#f87171` | Error states (red-400) |
 | Success | `#86efac` | Success states (green-300) |
 
 ### Typography
-- Font: Poppins (Google Fonts), weights 400 / 600 / 700
+- Display / headings: **Fraunces Variable** (`@fontsource-variable/fraunces`), `opsz` axis pinned to 144
+- Body / UI: **Poppins** (Google Fonts via fontsource), weights 400 / 600 / 700
 - Fallback: `system-ui, sans-serif`
 
 ## Privacy Principle
