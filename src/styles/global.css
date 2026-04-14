@@ -1,6 +1,7 @@
 @import '@fontsource/poppins/400.css';
 @import '@fontsource/poppins/600.css';
 @import '@fontsource/poppins/700.css';
+@import '@fontsource-variable/fraunces/opsz.css';
 @import "tailwindcss";
 @plugin "daisyui";
 
@@ -14,11 +15,13 @@
   --color-base-300: #44403c;
   --color-base-content: #fafaf9;
 
-  --color-primary: #f59e0b;
+  /* Amber-400 — slightly punchier than 500 */
+  --color-primary: #fbbf24;
   --color-primary-content: #1c1917;
 
-  --color-secondary: #78716c;
-  --color-secondary-content: #fafaf9;
+  /* Violet-400 — cool counterpoint to the warm amber */
+  --color-secondary: #a78bfa;
+  --color-secondary-content: #1c1917;
 
   --color-accent: #fb923c;
   --color-accent-content: #1c1917;
@@ -43,8 +46,91 @@
   --radius-box: 0.75rem;
 }
 
+/* ─── Base ────────────────────────────────────────── */
+
 @layer base {
   html {
     font-family: 'Poppins', system-ui, sans-serif;
   }
+
+  /* Fraunces for all headings — optical size axis engaged */
+  h1, h2, h3 {
+    font-family: 'Fraunces Variable', Georgia, serif;
+    font-variation-settings: 'opsz' 144;
+  }
+
+  /* Utility class for explicit display use (navbar brand, etc.) */
+  .font-display {
+    font-family: 'Fraunces Variable', Georgia, serif;
+    font-variation-settings: 'opsz' 144;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track  { background: #1c1917; }
+  ::-webkit-scrollbar-thumb  { background: #44403c; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #78716c; }
+
+  :focus-visible {
+    outline: 2px solid #fbbf24;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ─── Keyframes ───────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes softPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ─── Animation utilities ─────────────────────────── */
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+.animate-soft-pulse {
+  animation: softPulse 2.4s ease-in-out infinite;
+}
+
+/* ─── Back link ───────────────────────────────────── */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--color-base-content) 40%, transparent);
+  text-decoration: none;
+  transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--color-primary);
+  gap: 0.55rem;
+}
+
+.back-link::before {
+  content: '←';
+  transition: transform 0.2s ease;
+}
+
+.back-link:hover::before {
+  transform: translateX(-3px);
 }
