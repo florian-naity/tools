@@ -24,11 +24,17 @@ import DropZone from '../components/DropZone.astro';
 
   <!-- Drop zone: full-width above the 2-col panel -->
   <div class="animate-fade-in-up" style="animation-delay: 80ms;">
-    <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a PDF or drag & drop" />
+    <div class="relative rounded-2xl border border-orange-500/20 bg-base-200 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent pointer-events-none"></div>
+      <div class="relative p-5">
+        <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a PDF or drag & drop" />
+      </div>
+    </div>
   </div>
 
   <!-- Options + preview (shown after upload) -->
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up" style="animation-delay: 120ms;">
+  <p class="mt-6 text-xs font-bold uppercase tracking-widest text-base-content/30 animate-fade-in-up" style="animation-delay: 100ms;">Options</p>
+  <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up" style="animation-delay: 120ms;">
 
     <!-- Left: options -->
     <div id="options" class="hidden rounded-xl bg-base-200 border border-orange-500/15 p-5 flex flex-col gap-5">
@@ -83,9 +89,10 @@ import DropZone from '../components/DropZone.astro';
 
   </div>
 
-  <p class="mt-8 text-xs text-base-content/30">
-    Powered by <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0) and <a href="https://github.com/Stuk/jszip" class="underline hover:text-primary" target="_blank" rel="noopener">JSZip</a> (MIT).
-  </p>
+  <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <p class="text-xs text-base-content/30">Your files never leave your device.</p>
+    <p class="text-xs text-base-content/25">Powered by <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0) · <a href="https://github.com/Stuk/jszip" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">JSZip</a> (MIT).</p>
+  </div>
 </BaseLayout>
 
 <script>

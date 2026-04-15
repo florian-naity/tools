@@ -27,7 +27,12 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
 
     <!-- Drop zone -->
     <div class="animate-fade-in-up" style="animation-delay: 80ms;">
-      <DropZone id="img-input" accept="image/*" multiple={true} label="Click to upload images or drag & drop" />
+      <div class="relative rounded-2xl border border-orange-500/20 bg-base-200 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent pointer-events-none"></div>
+        <div class="relative p-5">
+          <DropZone id="img-input" accept="image/*" multiple={true} label="Click to upload images or drag & drop" />
+        </div>
+      </div>
     </div>
 
     <!-- Grid + controls (shown after upload) -->
@@ -41,7 +46,8 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
       <ThumbnailGrid id="img-grid" />
 
       <!-- Page size options -->
-      <div class="rounded-xl bg-base-200 border border-orange-500/15 p-4 flex flex-col gap-4">
+      <p class="text-xs font-bold uppercase tracking-widest text-base-content/30 mt-1">Options</p>
+      <div class="rounded-2xl bg-base-200 border border-orange-500/15 p-4 flex flex-col gap-4">
         <div class="flex flex-col gap-2">
           <label class="text-xs font-semibold uppercase tracking-widest text-orange-400/70">Page Size</label>
           <div class="flex gap-3 flex-wrap">
@@ -79,9 +85,10 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
 
   </div>
 
-  <p class="mt-8 text-xs text-base-content/30">
-    Powered by <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary" target="_blank" rel="noopener">pdf-lib</a> (MIT).
-  </p>
+  <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <p class="text-xs text-base-content/30">Your files never leave your device.</p>
+    <p class="text-xs text-base-content/25">Powered by <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">pdf-lib</a> (MIT).</p>
+  </div>
 </BaseLayout>
 
 <script>

@@ -26,10 +26,16 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
   <div class="flex flex-col gap-6">
 
     <div class="animate-fade-in-up" style="animation-delay: 80ms;">
-      <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a PDF or drag & drop" />
+      <div class="relative rounded-2xl border border-orange-500/20 bg-base-200 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent pointer-events-none"></div>
+        <div class="relative p-5">
+          <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a PDF or drag & drop" />
+        </div>
+      </div>
     </div>
 
     <div id="editor" class="hidden flex flex-col gap-4 animate-fade-in-up" style="animation-delay: 120ms;">
+      <p class="text-xs font-bold uppercase tracking-widest text-base-content/30">Pages</p>
       <div class="flex items-center justify-between flex-wrap gap-2 px-1">
         <p id="page-count" class="text-sm text-base-content/50"></p>
         <div class="flex gap-2">
@@ -57,9 +63,10 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
 
   </div>
 
-  <p class="mt-8 text-xs text-base-content/30">
-    Powered by <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0) and <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary" target="_blank" rel="noopener">pdf-lib</a> (MIT).
-  </p>
+  <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <p class="text-xs text-base-content/30">Your files never leave your device.</p>
+    <p class="text-xs text-base-content/25">Powered by <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0) · <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">pdf-lib</a> (MIT).</p>
+  </div>
 </BaseLayout>
 
 <script>

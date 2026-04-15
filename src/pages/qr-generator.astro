@@ -6,20 +6,35 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   title="QR Code Generator"
   description="Generate a customized QR code from any text or URL. Runs entirely in your browser."
 >
-  <div class="mb-8">
+  <!-- ─── Header ───────────────────────────────────────── -->
+  <div class="mb-10 animate-fade-in-up">
     <a href="/" class="back-link">All Tools</a>
-    <h1 class="text-2xl font-bold mt-3">QR Code Generator</h1>
-    <p class="text-sm text-base-content/60 mt-1">Customize and download a QR code. Runs entirely in your browser.</p>
+    <div class="mt-4 flex items-start gap-4">
+      <div class="shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-primary/10 border border-primary/25 shadow-lg shadow-primary/5">
+        ⬛
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-primary mb-1">QR Code</p>
+        <h1 class="text-2xl font-bold leading-tight">QR Code Generator</h1>
+        <p class="text-sm text-base-content/55 mt-1 max-w-md">
+          Customize dot style, colors, and add a center logo — then download your QR code as PNG or SVG. Your files never leave your device.
+        </p>
+      </div>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
     <!-- Options panel -->
-    <div class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-5">
+    <div class="animate-fade-in-up" style="animation-delay: 80ms;">
+      <p class="text-xs font-bold uppercase tracking-widest text-base-content/30 mb-3">Options</p>
+      <div class="relative rounded-2xl bg-base-200 border border-primary/20 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none"></div>
+        <div class="relative p-6 flex flex-col gap-5">
 
       <!-- Content -->
       <div class="flex flex-col gap-2">
-        <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Text or URL</label>
+        <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Text or URL</label>
         <textarea
           id="qr-input"
           class="textarea textarea-bordered bg-base-100 border-base-300 focus:border-primary resize-none h-24 text-sm"
@@ -29,7 +44,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       <!-- Dot style -->
       <div class="flex flex-col gap-2">
-        <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Dot Style</label>
+        <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Dot Style</label>
         <div class="flex flex-wrap gap-2" id="dot-style-group">
           {['square', 'rounded', 'dots', 'extra-rounded'].map((style, i) => (
             <label class="flex items-center gap-1.5 cursor-pointer">
@@ -49,21 +64,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- Colors row -->
       <div class="flex gap-4 flex-wrap">
         <div class="flex flex-col gap-2 flex-1 min-w-28">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Dot Color</label>
+          <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Dot Color</label>
           <div class="flex items-center gap-2">
             <input id="dot-color" type="color" value="#1c1917" class="w-10 h-10 rounded cursor-pointer border border-base-300 bg-transparent" />
             <span id="dot-color-label" class="text-xs text-base-content/40 font-mono">#1c1917</span>
           </div>
         </div>
         <div class="flex flex-col gap-2 flex-1 min-w-28">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Corner Color</label>
+          <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Corner Color</label>
           <div class="flex items-center gap-2">
             <input id="corner-color" type="color" value="#1c1917" class="w-10 h-10 rounded cursor-pointer border border-base-300 bg-transparent" />
             <span id="corner-color-label" class="text-xs text-base-content/40 font-mono">#1c1917</span>
           </div>
         </div>
         <div class="flex flex-col gap-2 flex-1 min-w-28">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Background</label>
+          <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Background</label>
           <div class="flex items-center gap-2">
             <input id="bg-color" type="color" value="#fafaf9" class="w-10 h-10 rounded cursor-pointer border border-base-300 bg-transparent" />
             <span id="bg-color-label" class="text-xs text-base-content/40 font-mono">#fafaf9</span>
@@ -73,7 +88,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       <!-- Logo upload -->
       <div class="flex flex-col gap-2">
-        <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Center Logo <span class="normal-case font-normal">(PNG or SVG)</span></label>
+        <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Center Logo <span class="normal-case font-normal">(PNG or SVG)</span></label>
         <div class="flex items-center gap-3">
           <label class="btn btn-outline btn-sm cursor-pointer">
             Upload logo
@@ -88,7 +103,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- ECL + Size -->
       <div class="flex gap-4 flex-wrap">
         <div class="flex flex-col gap-2 flex-1 min-w-36">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Error Correction</label>
+          <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Error Correction</label>
           <select id="qr-ecl" class="select select-bordered bg-base-100 border-base-300 text-sm">
             <option value="L">Low — 7%</option>
             <option value="M" selected>Medium — 15%</option>
@@ -97,32 +112,38 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </select>
         </div>
         <div class="flex flex-col gap-2 flex-1 min-w-28">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Size (px)</label>
+          <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Size (px)</label>
           <input id="qr-size" type="number" min="128" max="1024" value="300" class="input input-bordered bg-base-100 border-base-300 text-sm" />
         </div>
       </div>
 
       <button id="qr-generate" class="btn btn-primary w-full">Generate</button>
+        </div>
+      </div>
     </div>
 
     <!-- Preview panel -->
-    <div class="card bg-base-200 border border-base-300 p-6 flex flex-col items-center justify-center gap-4 min-h-64">
-      <div id="qr-output" class="hidden flex flex-col items-center gap-4">
-        <div id="qr-canvas-container" class="rounded overflow-hidden"></div>
-        <div class="flex gap-2">
-          <button id="qr-download-png" class="btn btn-primary btn-sm">Download PNG</button>
-          <button id="qr-download-svg" class="btn btn-outline btn-sm">Download SVG</button>
+    <div class="animate-fade-in-up" style="animation-delay: 120ms;">
+      <p class="text-xs font-bold uppercase tracking-widest text-base-content/30 mb-3">Preview</p>
+      <div class="rounded-2xl bg-base-200 border border-primary/20 p-6 flex flex-col items-center justify-center gap-4 min-h-64">
+        <div id="qr-output" class="hidden flex flex-col items-center gap-4">
+          <div id="qr-canvas-container" class="rounded overflow-hidden"></div>
+          <div class="flex gap-2">
+            <button id="qr-download-png" class="btn btn-primary btn-sm">Download PNG</button>
+            <button id="qr-download-svg" class="btn btn-outline btn-sm">Download SVG</button>
+          </div>
         </div>
+        <p id="qr-placeholder" class="text-sm text-base-content/30 text-center">Your QR code will appear here.</p>
+        <p id="qr-error" class="hidden text-sm text-error text-center"></p>
       </div>
-      <p id="qr-placeholder" class="text-sm text-base-content/30 text-center">Your QR code will appear here.</p>
-      <p id="qr-error" class="hidden text-sm text-error text-center"></p>
     </div>
 
   </div>
 
-  <p class="mt-6 text-xs text-base-content/30">
-    Powered by <a href="https://github.com/kozakdenys/qr-code-styling" class="underline hover:text-primary" target="_blank" rel="noopener">qr-code-styling</a> (MIT).
-  </p>
+  <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <p class="text-xs text-base-content/30">Your files never leave your device.</p>
+    <p class="text-xs text-base-content/25">Powered by <a href="https://github.com/kozakdenys/qr-code-styling" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">qr-code-styling</a> (MIT).</p>
+  </div>
 </BaseLayout>
 
 <script>
