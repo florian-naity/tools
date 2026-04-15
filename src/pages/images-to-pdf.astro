@@ -5,19 +5,38 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
 ---
 
 <BaseLayout title="Images to PDF" description="Combine images into a PDF. Runs entirely in your browser.">
-  <div class="mb-8">
+
+  <!-- ─── Header ───────────────────────────────────────── -->
+  <div class="mb-10 animate-fade-in-up">
     <a href="/" class="back-link">All Tools</a>
-    <h1 class="text-2xl font-bold mt-3">Images to PDF</h1>
-    <p class="text-sm text-base-content/60 mt-1">Upload images, drag to reorder, then generate a PDF. Runs entirely in your browser.</p>
+    <div class="mt-4 flex items-start gap-4">
+      <div class="shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-orange-500/10 border border-orange-500/25 shadow-lg shadow-orange-500/5">
+        🖼️
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-1">PDF Tools</p>
+        <h1 class="text-2xl font-bold leading-tight">Images to PDF</h1>
+        <p class="text-sm text-base-content/55 mt-1 max-w-md">
+          Upload images, drag to reorder, choose a page size — then compile them into a single PDF. Your files never leave your device.
+        </p>
+      </div>
+    </div>
   </div>
 
   <div class="flex flex-col gap-6">
 
     <!-- Drop zone -->
-    <DropZone id="img-input" accept="image/*" multiple={true} label="Click to upload images or drag & drop" />
+    <div class="animate-fade-in-up" style="animation-delay: 80ms;">
+      <div class="relative rounded-2xl border border-orange-500/20 bg-base-200 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent pointer-events-none"></div>
+        <div class="relative p-5">
+          <DropZone id="img-input" accept="image/*" multiple={true} label="Click to upload images or drag & drop" />
+        </div>
+      </div>
+    </div>
 
     <!-- Grid + controls (shown after upload) -->
-    <div id="editor" class="hidden flex flex-col gap-4">
+    <div id="editor" class="hidden flex flex-col gap-4 animate-fade-in-up" style="animation-delay: 120ms;">
       <div class="flex items-center justify-between">
         <p id="img-count" class="text-sm text-base-content/50"></p>
         <button id="add-more" class="btn btn-ghost btn-xs text-base-content/40">+ Add more</button>
@@ -27,9 +46,10 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
       <ThumbnailGrid id="img-grid" />
 
       <!-- Page size options -->
-      <div class="card bg-base-200 border border-base-300 p-4 flex flex-col gap-4">
+      <p class="text-xs font-bold uppercase tracking-widest text-base-content/30 mt-1">Options</p>
+      <div class="rounded-2xl bg-base-200 border border-orange-500/15 p-4 flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Page Size</label>
+          <label class="text-xs font-semibold uppercase tracking-widest text-orange-400/70">Page Size</label>
           <div class="flex gap-3 flex-wrap">
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="page-size" value="fit" class="radio radio-primary radio-sm" checked />
@@ -47,7 +67,7 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
         </div>
 
         <div id="margin-row" class="hidden flex flex-col gap-2">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Margin</label>
+          <label class="text-xs font-semibold uppercase tracking-widest text-orange-400/70">Margin</label>
           <div class="flex gap-3 flex-wrap">
             {[0, 10, 20, 40].map(m => (
               <label class="flex items-center gap-2 cursor-pointer">
@@ -65,9 +85,10 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
 
   </div>
 
-  <p class="mt-6 text-xs text-base-content/30">
-    Powered by <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary" target="_blank" rel="noopener">pdf-lib</a> (MIT).
-  </p>
+  <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <p class="text-xs text-base-content/30">Your files never leave your device.</p>
+    <p class="text-xs text-base-content/25">Powered by <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">pdf-lib</a> (MIT).</p>
+  </div>
 </BaseLayout>
 
 <script>
@@ -204,7 +225,7 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
       }
 
       const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
