@@ -19,19 +19,19 @@ A collection of small, self-contained web tools that run entirely in the browser
 ### QR Code
 | Tool | Description |
 |---|---|
-| [QR Code Generator](https://tools.florianabry.me/qr-generator) | Generate a customizable QR code — dot style, corner color, background, center logo, PNG/SVG export. |
+| [QR Code Generator](https://tools.florianabry.me/qr-generator) | Generate a styled QR code — 4 dot styles, split outer/inner corner colors, transparent background, center logo, PNG (300/600/1024 px) or SVG export. Live preview. |
 | [QR Code Reader](https://tools.florianabry.me/qr-reader) | Upload an image containing a QR code to decode it. |
 
-### Spreadsheets *(coming soon)*
-| Tool | Description |
-|---|---|
-| Excel Viewer / Editor | Open, view and edit `.xlsx` files in your browser, then download the result. |
-| Excel to CSV | Convert any sheet of an Excel file to a `.csv` download. |
+### Productivity
+| Tool | Status | Description |
+|---|---|---|
+| [Offline Examiner Tracker](https://tools.florianabry.me/offline-examiner-tracker) | Live | Excel spreadsheet for EPO patent examiners — tracks productivity goals accounting for actual vacation days. Download and run locally. |
+| Online Examiner Tracker | Coming soon | Browser-based version with persistent cloud storage via Google Drive OAuth — no server. |
 
-### Productivity *(coming soon)*
+### Markdown *(coming soon)*
 | Tool | Description |
 |---|---|
-| Examiner Tracker | Track productivity and goals as a parent examiner. Data stored in your Google Drive via OAuth — no server. |
+| Markdown Converter | Convert Markdown to HTML, PDF, or plain text — entirely in the browser. |
 
 ---
 

@@ -54,7 +54,8 @@ tools/
 │   └── styles/
 │       └── global.css           # Tailwind + DaisyUI theme
 ├── docs/
-│   └── requirements.md
+│   ├── requirements.md
+│   └── pdf-tools.md         # Detailed spec for the four PDF tools
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml           # Build + FTP deploy to OVH on push to main
@@ -94,11 +95,26 @@ tools/
 The `opsz` axis is pinned to 144 for display use — at large sizes Fraunces opens up its most expressive letterforms.
 Use `.font-display` utility class for explicit Fraunces override outside of heading tags.
 
+### Section accent colors
+
+Each tool section uses a dedicated accent color applied consistently to icon backgrounds, borders, section badges, and label text:
+
+| Section | Color | Tailwind class |
+|---|---|---|
+| PDF Tools | Orange | `orange-500` / `orange-400` |
+| QR Code | Primary (amber) | `primary` |
+| Productivity | Violet | `violet-500` / `violet-400` |
+| Markdown | Sky | `sky-500` / `sky-400` |
+
 ### Component conventions
 - Tool pages use `BaseLayout` with a `title` and `description` prop
 - Each tool page has a privacy notice: *"Your files never leave your device."*
 - Consistent page structure: header (`back-link` → `h1` → subtitle) → tool card → attribution footer note
 - Back links use the `.back-link` CSS utility class (animated arrow on hover)
+- Page header icon: `w-14 h-14 rounded-2xl` with section accent `bg-*/10 border-*/25`
+- Main input area: wrapped in a `rounded-2xl border border-*/20 bg-base-200` gradient card (`from-*/5`)
+- Section labels: `text-xs font-bold uppercase tracking-widest` in section accent color
+- Footer bar: privacy notice left, library attribution right
 
 ### Animations & transitions
 

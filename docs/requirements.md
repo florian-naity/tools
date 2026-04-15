@@ -51,10 +51,24 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 ## Initial Tool Scope
 
 ### 1. QR Code Generator
-- Input: text or URL
-- Output: downloadable QR code image (PNG, SVG)
+- Input: text or URL (live preview — debounced 350 ms)
 - Library: **qr-code-styling** (MIT) — via npm
 - Credit: visible attribution on the page
+
+#### Main UI options
+- **Dot style**: Square / Rounded / Dots / Soft (extra-rounded) — visual swatch cards
+- **Dot color**: color picker
+- **Center logo**: optional PNG or SVG upload; auto-sets ECL to H; `imageSize: 0.5`, `margin: 4`
+- **Preview**: fixed 300 px canvas, always visible (stacked above options on mobile)
+
+#### Advanced panel (collapsed by default)
+- **Corner Colors**: separate pickers for Outer frame (`cornersSquareOptions`) and Inner center dot (`cornersDotOptions`); "Match dot color" checkbox links both to the dot color
+- **Background**: color picker + "Transparent" checkbox — transparent only works with SVG export
+- **Redundancy (ECL)**: L / M (default) / Q / H — card grid
+
+#### Export
+- **PNG**: dropdown button with three size options — Small (300 px) / Print (600 px) / High-res (1024 px); each generates a fresh instance at the chosen size
+- **SVG**: plain button, always exports at 600 px (vector, scales freely)
 
 ### 2. QR Code Reader
 - Input: uploaded image file containing a QR code
