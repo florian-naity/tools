@@ -44,9 +44,9 @@ tools/
 │   │   ├── pdf-to-images.astro
 │   │   ├── reorder-pdf.astro
 │   │   ├── merge-pdf.astro
-│   │   ├── excel-editor.astro        # planned
-│   │   ├── excel-to-csv.astro        # planned
-│   │   └── examiner-tracker.astro    # planned — Google OAuth + Drive
+│   │   ├── examiner-tracker.astro         # planned — Google OAuth + Drive (Online Examiner Tracker)
+│   │   ├── offline-examiner-tracker.astro # planned — Excel file download (Offline Examiner Tracker)
+│   │   └── markdown-converter.astro       # planned — Markdown to HTML/PDF/text
 │   └── styles/
 │       └── global.css           # Tailwind + DaisyUI theme
 ├── docs/
@@ -113,9 +113,9 @@ Use `.font-display` utility class for explicit Fraunces override outside of head
 | PDF to Images | PDF.js (Apache 2.0) + jszip (MIT) | npm (`pdfjs-dist`, `jszip`) |
 | Reorder & Delete | PDF.js (Apache 2.0) + pdf-lib (MIT) | npm (`pdfjs-dist`, `pdf-lib`) |
 | Merge PDFs | pdf-lib (MIT) | npm (`pdf-lib`) |
-| Excel Editor | SheetJS CE (Apache 2.0) | npm (`xlsx`) |
-| Excel to CSV | SheetJS CE (Apache 2.0) | npm (`xlsx`) |
-| Examiner Tracker | Google Identity Services (Google) | CDN (`accounts.google.com/gsi/client`) |
+| Online Examiner Tracker | Google Identity Services (Google) | CDN (`accounts.google.com/gsi/client`) |
+| Offline Examiner Tracker | SheetJS CE (Apache 2.0) | npm (`xlsx`) |
+| Markdown Converter | TBD | TBD |
 
 ## Library Policy
 
@@ -128,7 +128,7 @@ Use `.font-display` utility class for explicit Fraunces override outside of head
 ### DropZone.astro
 Reusable file input with drag-and-drop. Props: `id`, `accept`, `multiple`, `label`.
 Emits custom DOM event `dropzone:files` with `detail: FileList` when files are selected/dropped.
-Used by: all PDF tools, both Excel tools.
+Used by: all PDF tools, Offline Examiner Tracker.
 
 ### ThumbnailGrid.astro
 Drag-and-drop grid of image/page thumbnails. Each card has a preview + label + ✕ remove button.
@@ -150,7 +150,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.mjs';
 The worker file must be copied from `node_modules/pdfjs-dist/build/pdf.worker.min.mjs` to `public/vendor/pdf.worker.min.mjs`. Do this manually or add a `postinstall` script.
 Check the exact filename with: `ls node_modules/pdfjs-dist/build/`
 
-## Examiner Tracker — Auth & Storage Pattern
+## Online Examiner Tracker — Auth & Storage Pattern
 
 This tool is the exception to the "no external dependencies" rule — it requires Google OAuth.
 
