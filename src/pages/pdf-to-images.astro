@@ -4,72 +4,86 @@ import DropZone from '../components/DropZone.astro';
 ---
 
 <BaseLayout title="PDF to Images" description="Convert PDF pages to PNG or JPG images. Runs entirely in your browser.">
-  <div class="mb-8">
+
+  <!-- ─── Header ───────────────────────────────────────── -->
+  <div class="mb-10 animate-fade-in-up">
     <a href="/" class="back-link">All Tools</a>
-    <h1 class="text-2xl font-bold mt-3">PDF to Images</h1>
-    <p class="text-sm text-base-content/60 mt-1">Convert each page of a PDF to an image. Downloaded as a ZIP. Runs entirely in your browser.</p>
+    <div class="mt-4 flex items-start gap-4">
+      <div class="shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-orange-500/10 border border-orange-500/25 shadow-lg shadow-orange-500/5">
+        📄
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-1">PDF Tools</p>
+        <h1 class="text-2xl font-bold leading-tight">PDF to Images</h1>
+        <p class="text-sm text-base-content/55 mt-1 max-w-md">
+          Export each page of a PDF as PNG or JPG. Pick your resolution and format, then download everything as a ZIP. Your files never leave your device.
+        </p>
+      </div>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- Drop zone: full-width above the 2-col panel -->
+  <div class="animate-fade-in-up" style="animation-delay: 80ms;">
+    <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a PDF or drag & drop" />
+  </div>
 
-    <!-- Left: upload + options -->
-    <div class="flex flex-col gap-5">
-      <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a PDF or drag & drop" />
+  <!-- Options + preview (shown after upload) -->
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up" style="animation-delay: 120ms;">
 
-      <div id="options" class="hidden card bg-base-200 border border-base-300 p-5 flex flex-col gap-5">
-        <p id="pdf-info" class="text-sm text-base-content/60"></p>
+    <!-- Left: options -->
+    <div id="options" class="hidden rounded-xl bg-base-200 border border-orange-500/15 p-5 flex flex-col gap-5">
+      <p id="pdf-info" class="text-sm text-orange-300/70 font-medium"></p>
 
-        <!-- Format -->
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">Format</label>
-          <div class="flex gap-4">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="format" value="png" class="radio radio-primary radio-sm" checked />
-              <span class="text-sm">PNG (lossless)</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="format" value="jpg" class="radio radio-primary radio-sm" />
-              <span class="text-sm">JPG</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- JPG quality (shown only for JPG) -->
-        <div id="quality-row" class="hidden flex flex-col gap-2">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">
-            JPG Quality: <span id="quality-label">85%</span>
+      <!-- Format -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-semibold uppercase tracking-widest text-orange-400/70">Format</label>
+        <div class="flex gap-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="format" value="png" class="radio radio-primary radio-sm" checked />
+            <span class="text-sm">PNG (lossless)</span>
           </label>
-          <input id="quality-slider" type="range" min="60" max="100" value="85" class="range range-primary range-sm" />
-        </div>
-
-        <!-- DPI -->
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-semibold uppercase tracking-widest text-base-content/50">
-            Resolution: <span id="dpi-label">150 DPI</span>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="format" value="jpg" class="radio radio-primary radio-sm" />
+            <span class="text-sm">JPG</span>
           </label>
-          <input id="dpi-slider" type="range" min="72" max="300" value="150" step="1" class="range range-primary range-sm" />
-          <div class="flex justify-between text-xs text-base-content/30">
-            <span>72</span><span>150</span><span>300</span>
-          </div>
         </div>
+      </div>
 
-        <button id="convert-btn" class="btn btn-primary w-full">Convert & Download ZIP</button>
-        <div id="progress-row" class="hidden flex flex-col gap-2">
-          <progress id="progress-bar" class="progress progress-primary w-full" value="0" max="100"></progress>
-          <p id="progress-label" class="text-xs text-base-content/50 text-center"></p>
+      <!-- JPG quality (shown only for JPG) -->
+      <div id="quality-row" class="hidden flex flex-col gap-2">
+        <label class="text-xs font-semibold uppercase tracking-widest text-orange-400/70">
+          JPG Quality: <span id="quality-label">85%</span>
+        </label>
+        <input id="quality-slider" type="range" min="60" max="100" value="85" class="range range-primary range-sm" />
+      </div>
+
+      <!-- DPI -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-semibold uppercase tracking-widest text-orange-400/70">
+          Resolution: <span id="dpi-label">150 DPI</span>
+        </label>
+        <input id="dpi-slider" type="range" min="72" max="300" value="150" step="1" class="range range-primary range-sm" />
+        <div class="flex justify-between text-xs text-base-content/30">
+          <span>72</span><span>150</span><span>300</span>
         </div>
+      </div>
+
+      <button id="convert-btn" class="btn btn-primary w-full">Convert & Download ZIP</button>
+      <div id="progress-row" class="hidden flex flex-col gap-2">
+        <progress id="progress-bar" class="progress progress-primary w-full" value="0" max="100"></progress>
+        <p id="progress-label" class="text-xs text-base-content/50 text-center"></p>
       </div>
     </div>
 
     <!-- Right: page preview thumbnails -->
     <div class="flex flex-col gap-3">
-      <p id="preview-title" class="text-xs font-semibold uppercase tracking-widest text-base-content/50 hidden">Preview</p>
+      <p id="preview-title" class="text-xs font-semibold uppercase tracking-widest text-base-content/40 hidden">Page Preview</p>
       <div id="preview-grid" class="grid grid-cols-3 gap-2"></div>
     </div>
 
   </div>
 
-  <p class="mt-6 text-xs text-base-content/30">
+  <p class="mt-8 text-xs text-base-content/30">
     Powered by <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0) and <a href="https://github.com/Stuk/jszip" class="underline hover:text-primary" target="_blank" rel="noopener">JSZip</a> (MIT).
   </p>
 </BaseLayout>

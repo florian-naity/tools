@@ -4,18 +4,32 @@ import DropZone from '../components/DropZone.astro';
 ---
 
 <BaseLayout title="Merge PDFs" description="Combine multiple PDF files into one. Runs entirely in your browser.">
-  <div class="mb-8">
+
+  <!-- ─── Header ───────────────────────────────────────── -->
+  <div class="mb-10 animate-fade-in-up">
     <a href="/" class="back-link">All Tools</a>
-    <h1 class="text-2xl font-bold mt-3">Merge PDFs</h1>
-    <p class="text-sm text-base-content/60 mt-1">Upload multiple PDFs, drag to set the merge order, then download. Runs entirely in your browser.</p>
+    <div class="mt-4 flex items-start gap-4">
+      <div class="shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-orange-500/10 border border-orange-500/25 shadow-lg shadow-orange-500/5">
+        📎
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-1">PDF Tools</p>
+        <h1 class="text-2xl font-bold leading-tight">Merge PDFs</h1>
+        <p class="text-sm text-base-content/55 mt-1 max-w-md">
+          Upload multiple PDFs, drag them into the order you want, and download them as a single combined file. Your files never leave your device.
+        </p>
+      </div>
+    </div>
   </div>
 
   <div class="flex flex-col gap-6">
 
-    <DropZone id="pdf-input" accept="application/pdf" multiple={true} label="Click to upload PDFs or drag & drop" />
+    <div class="animate-fade-in-up" style="animation-delay: 80ms;">
+      <DropZone id="pdf-input" accept="application/pdf" multiple={true} label="Click to upload PDFs or drag & drop" />
+    </div>
 
-    <div id="editor" class="hidden flex flex-col gap-4">
-      <div class="flex items-center justify-between flex-wrap gap-2">
+    <div id="editor" class="hidden flex flex-col gap-4 animate-fade-in-up" style="animation-delay: 120ms;">
+      <div class="flex items-center justify-between flex-wrap gap-2 px-1">
         <p id="file-count" class="text-sm text-base-content/50"></p>
         <div class="flex gap-2">
           <button id="add-more" class="btn btn-ghost btn-xs text-base-content/40">+ Add more</button>
@@ -24,7 +38,9 @@ import DropZone from '../components/DropZone.astro';
       </div>
 
       <!-- File list with drag-to-reorder -->
-      <div id="file-list" class="flex flex-col gap-2"></div>
+      <div class="rounded-xl border border-orange-500/15 bg-base-200/50 p-3 flex flex-col gap-2">
+        <div id="file-list" class="flex flex-col gap-2"></div>
+      </div>
 
       <button id="merge-btn" class="btn btn-primary w-full">Merge & Download</button>
       <p id="merge-status" class="text-sm text-base-content/50 text-center hidden"></p>
@@ -32,7 +48,7 @@ import DropZone from '../components/DropZone.astro';
 
   </div>
 
-  <p class="mt-6 text-xs text-base-content/30">
+  <p class="mt-8 text-xs text-base-content/30">
     Powered by <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary" target="_blank" rel="noopener">pdf-lib</a> (MIT).
   </p>
 </BaseLayout>
@@ -166,7 +182,7 @@ import DropZone from '../components/DropZone.astro';
       }
 
       const pdfBytes = await merged.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = 'merged.pdf'; a.click();
