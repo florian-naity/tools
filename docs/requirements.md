@@ -89,20 +89,28 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 - Library: **pdf-lib** (MIT) — via npm
 - Detail: see [docs/pdf-tools.md](pdf-tools.md)
 
+## Live Tools (Productivity)
+
+### 7. Offline Examiner Tracker
+- Target users: patent examiners at the European Patent Office (EPO)
+- Purpose: track progress toward the yearly productivity goal, accounting for actual vacation days — filling the gap left by the internal EPO tool which spreads goals evenly across months without considering leave
+- Delivery: static Excel file download (`public/documents/EPO Pervisional Production.xlsx`)
+- No JS library — the page is a download landing page only
+- Page: `src/pages/offline-examiner-tracker.astro`
+- Screenshot preview: `public/images/excel-screenshot.png`
+- Compatible with Microsoft Excel 2016 and later
+
+#### Features (in the spreadsheet)
+- Input: yearly goal, location, planned vacation days
+- Production tracking table: log daily actions by type (Research, Exam, 1st Communication, etc.)
+- Dashboard: cumulated production vs. adjusted objective, predicted productivity, YTD score
+- Charts: productivity trend, cumulated production, total production, research and exam breakdowns
+
 ## Planned Tools
 
-### 7. Excel Viewer / Editor
-- Input: uploaded .xlsx / .xls / .ods file
-- Output: rendered spreadsheet, editable in browser, re-downloadable as .xlsx
-- Library: **SheetJS community edition** (Apache 2.0) — via npm
-
-### 8. Excel to CSV
-- Input: uploaded .xlsx / .xls file, sheet selection
-- Output: .csv file download
-- Library: **SheetJS community edition** (Apache 2.0) — via npm
-
-### 9. Parent Examiner — Productivity & Goals Tracker
-- Target users: parent examiners (small, defined group)
+### 8. Online Examiner Tracker
+- Target users: patent examiners at the European Patent Office (EPO)
+- Purpose: same goal as the Offline Tracker but browser-based, with persistent cloud storage
 - Auth: Google OAuth 2.0 PKCE (client-side only, no backend — client ID from Google Cloud Console)
 - Storage: one JSON file per user in their personal Google Drive `appDataFolder` (hidden folder, only visible to this app)
 - Session: access token in `localStorage`, silent re-auth on expiry
@@ -121,10 +129,16 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 - Data format: JSON (structured records, easy to migrate)
 - No server, no database — the app is a pure frontend that reads/writes the user's own Drive
 
+### 9. Markdown Converter
+- Input: Markdown text (typed or pasted)
+- Output: HTML, PDF, or plain text download — entirely in the browser
+- Library: TBD
+- Page: `src/pages/markdown-converter.astro`
+
 ## Library Policy
 
 - **Vendored** (copied into `public/vendor/`): small single-file libraries used directly in `<script>` tags (jsQR at `public/vendor/jsQR.js`); also PDF.js worker (`public/vendor/pdf.worker.min.mjs`)
-- **npm** (bundled by Astro/Vite): larger libraries imported as ES modules (pdfjs-dist, pdf-lib, jszip, SheetJS, qr-code-styling)
+- **npm** (bundled by Astro/Vite): larger libraries imported as ES modules (pdfjs-dist, pdf-lib, jszip, qr-code-styling)
 - All vendored files retain their original license/copyright comment header
 - Attribution shown on relevant tool pages
 

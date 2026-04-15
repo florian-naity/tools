@@ -21,6 +21,10 @@ npm run preview    # Preview the built output locally
 ```
 tools/
 ├── public/
+│   ├── documents/
+│   │   └── EPO Pervisional Production.xlsx   # Offline Examiner Tracker download
+│   ├── images/
+│   │   └── excel-screenshot.png              # Preview image for Offline Examiner Tracker
 │   └── vendor/                    # Vendored JS libraries (with license headers intact)
 │       ├── jsQR.js                # Cosmo Wolfe — MIT
 │       └── pdf.worker.min.mjs    # PDF.js Web Worker — Apache 2.0
@@ -44,8 +48,8 @@ tools/
 │   │   ├── pdf-to-images.astro
 │   │   ├── reorder-pdf.astro
 │   │   ├── merge-pdf.astro
+│   │   ├── offline-examiner-tracker.astro # live — static Excel file download
 │   │   ├── examiner-tracker.astro         # planned — Google OAuth + Drive (Online Examiner Tracker)
-│   │   ├── offline-examiner-tracker.astro # planned — Excel file download (Offline Examiner Tracker)
 │   │   └── markdown-converter.astro       # planned — Markdown to HTML/PDF/text
 │   └── styles/
 │       └── global.css           # Tailwind + DaisyUI theme
@@ -114,7 +118,7 @@ Use `.font-display` utility class for explicit Fraunces override outside of head
 | Reorder & Delete | PDF.js (Apache 2.0) + pdf-lib (MIT) | npm (`pdfjs-dist`, `pdf-lib`) |
 | Merge PDFs | pdf-lib (MIT) | npm (`pdf-lib`) |
 | Online Examiner Tracker | Google Identity Services (Google) | CDN (`accounts.google.com/gsi/client`) |
-| Offline Examiner Tracker | SheetJS CE (Apache 2.0) | npm (`xlsx`) |
+| Offline Examiner Tracker | — (static file download, no JS library) | `public/documents/` |
 | Markdown Converter | TBD | TBD |
 
 ## Library Policy
@@ -128,7 +132,7 @@ Use `.font-display` utility class for explicit Fraunces override outside of head
 ### DropZone.astro
 Reusable file input with drag-and-drop. Props: `id`, `accept`, `multiple`, `label`.
 Emits custom DOM event `dropzone:files` with `detail: FileList` when files are selected/dropped.
-Used by: all PDF tools, Offline Examiner Tracker.
+Used by: all PDF tools.
 
 ### ThumbnailGrid.astro
 Drag-and-drop grid of image/page thumbnails. Each card has a preview + label + ✕ remove button.
