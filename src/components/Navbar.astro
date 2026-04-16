@@ -141,24 +141,31 @@ const groups = [
 </div>
 
 <script>
-  const btn = document.getElementById('mobile-menu-btn')!;
-  const menu = document.getElementById('mobile-menu')!;
-  const iconBurger = document.getElementById('icon-burger')!;
-  const iconClose = document.getElementById('icon-close')!;
+  function initMobileMenu() {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    const iconBurger = document.getElementById('icon-burger');
+    const iconClose = document.getElementById('icon-close');
 
-  btn.addEventListener('click', () => {
-    const open = !menu.classList.contains('hidden');
-    menu.classList.toggle('hidden', open);
-    iconBurger.classList.toggle('hidden', !open);
-    iconClose.classList.toggle('hidden', open);
-  });
+    if (!btn || !menu || !iconBurger || !iconClose) return;
 
-  // Close mobile menu when a link is clicked
-  menu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      menu.classList.add('hidden');
-      iconBurger.classList.remove('hidden');
-      iconClose.classList.add('hidden');
+    btn.addEventListener('click', () => {
+      const open = !menu.classList.contains('hidden');
+      menu.classList.toggle('hidden', open);
+      iconBurger.classList.toggle('hidden', !open);
+      iconClose.classList.toggle('hidden', open);
     });
-  });
+
+    // Close mobile menu when a link is clicked
+    menu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menu.classList.add('hidden');
+        iconBurger.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+      });
+    });
+  }
+
+  // Re-run after every view transition navigation
+  document.addEventListener('astro:page-load', initMobileMenu);
 </script>

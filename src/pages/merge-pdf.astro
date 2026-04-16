@@ -109,6 +109,7 @@ import DropZone from '../components/DropZone.astro';
     const removeBtn = document.createElement('button');
     removeBtn.className = 'btn btn-ghost btn-xs text-base-content/30 hover:text-error shrink-0';
     removeBtn.textContent = '✕';
+    removeBtn.setAttribute('aria-label', `Remove ${entry.file.name}`);
     removeBtn.addEventListener('click', () => {
       entries = entries.filter(e => e.id !== entry.id);
       row.remove();

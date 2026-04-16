@@ -34,34 +34,38 @@ const acceptLabel = accept === 'application/pdf'
 </div>
 
 <script>
-  document.querySelectorAll<HTMLDivElement>('.dropzone-root').forEach(zone => {
-    const id = zone.dataset.id!;
-    const fileInput = document.getElementById(id) as HTMLInputElement;
+  function initDropZones() {
+    document.querySelectorAll<HTMLDivElement>('.dropzone-root').forEach(zone => {
+      const id = zone.dataset.id!;
+      const fileInput = document.getElementById(id) as HTMLInputElement;
 
-    zone.addEventListener('click', () => fileInput.click());
+      zone.addEventListener('click', () => fileInput.click());
 
-    zone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      zone.classList.add('border-primary', 'bg-base-300/30');
+      zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zone.classList.add('border-primary', 'bg-base-300/30');
+      });
+
+      zone.addEventListener('dragleave', () => {
+        zone.classList.remove('border-primary', 'bg-base-300/30');
+      });
+
+      zone.addEventListener('drop', (e: DragEvent) => {
+        e.preventDefault();
+        zone.classList.remove('border-primary', 'bg-base-300/30');
+        const files = e.dataTransfer?.files;
+        if (files?.length) {
+          zone.dispatchEvent(new CustomEvent('dropzone:files', { detail: files, bubbles: true }));
+        }
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files?.length) {
+          zone.dispatchEvent(new CustomEvent('dropzone:files', { detail: fileInput.files, bubbles: true }));
+        }
+      });
     });
+  }
 
-    zone.addEventListener('dragleave', () => {
-      zone.classList.remove('border-primary', 'bg-base-300/30');
-    });
-
-    zone.addEventListener('drop', (e: DragEvent) => {
-      e.preventDefault();
-      zone.classList.remove('border-primary', 'bg-base-300/30');
-      const files = e.dataTransfer?.files;
-      if (files?.length) {
-        zone.dispatchEvent(new CustomEvent('dropzone:files', { detail: files, bubbles: true }));
-      }
-    });
-
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files?.length) {
-        zone.dispatchEvent(new CustomEvent('dropzone:files', { detail: fileInput.files, bubbles: true }));
-      }
-    });
-  });
+  document.addEventListener('astro:page-load', initDropZones);
 </script>

@@ -70,7 +70,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div class="flex flex-col gap-2">
             <label class="text-xs font-semibold uppercase tracking-widest text-primary/60">Dot Color</label>
             <div class="flex items-center gap-3">
-              <input id="dot-color" type="color" value="#1c1917" class="w-10 h-10 rounded-lg cursor-pointer border border-base-300 bg-transparent" />
+              <input id="dot-color" type="color" value="#1c1917" class="w-10 h-10 rounded-lg cursor-pointer border border-base-300 bg-transparent" aria-label="Dot color" />
               <span id="dot-color-label" class="text-xs text-base-content/40 font-mono">#1c1917</span>
             </div>
           </div>
@@ -84,7 +84,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                 <input id="logo-input" type="file" accept="image/png,image/svg+xml" class="hidden" />
               </label>
               <span id="logo-name" class="text-xs text-base-content/40">No file selected</span>
-              <button id="logo-clear" class="btn btn-ghost btn-xs text-base-content/30 hidden">✕</button>
+              <button id="logo-clear" class="btn btn-ghost btn-xs text-base-content/30 hidden" aria-label="Clear logo">✕</button>
             </div>
           </div>
 
@@ -115,12 +115,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                 <div id="corner-color-wrap" class="flex flex-col gap-2 opacity-40 pointer-events-none">
                   <div class="flex items-center gap-3">
                     <span class="text-xs text-base-content/35 w-12 shrink-0">Outer</span>
-                    <input id="corner-square-color" type="color" value="#1c1917" class="w-9 h-9 rounded-lg cursor-pointer border border-base-300 bg-transparent" />
+                    <input id="corner-square-color" type="color" value="#1c1917" class="w-9 h-9 rounded-lg cursor-pointer border border-base-300 bg-transparent" aria-label="Corner outer color" />
                     <span id="corner-square-color-label" class="text-xs text-base-content/40 font-mono">#1c1917</span>
                   </div>
                   <div class="flex items-center gap-3">
                     <span class="text-xs text-base-content/35 w-12 shrink-0">Inner</span>
-                    <input id="corner-dot-color" type="color" value="#1c1917" class="w-9 h-9 rounded-lg cursor-pointer border border-base-300 bg-transparent" />
+                    <input id="corner-dot-color" type="color" value="#1c1917" class="w-9 h-9 rounded-lg cursor-pointer border border-base-300 bg-transparent" aria-label="Corner inner color" />
                     <span id="corner-dot-color-label" class="text-xs text-base-content/40 font-mono">#1c1917</span>
                   </div>
                 </div>
@@ -136,7 +136,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                   </label>
                 </div>
                 <div id="bg-color-wrap" class="flex items-center gap-3">
-                  <input id="bg-color" type="color" value="#fafaf9" class="w-10 h-10 rounded-lg cursor-pointer border border-base-300 bg-transparent" />
+                  <input id="bg-color" type="color" value="#fafaf9" class="w-10 h-10 rounded-lg cursor-pointer border border-base-300 bg-transparent" aria-label="Background color" />
                   <span id="bg-color-label" class="text-xs text-base-content/40 font-mono">#fafaf9</span>
                 </div>
                 <p class="text-xs text-base-content/25 italic">Transparent background only works when downloading as SVG.</p>
