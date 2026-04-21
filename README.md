@@ -15,6 +15,7 @@ A collection of small, self-contained web tools that run entirely in the browser
 | [PDF to Images](https://tools.florianabry.me/pdf-to-images) | Export each page of a PDF as PNG or JPG. Resolution slider (72–300 DPI), downloaded as ZIP. |
 | [Reorder & Delete Pages](https://tools.florianabry.me/reorder-pdf) | Drag-and-drop page thumbnail grid to reorder or remove pages, then download the result. |
 | [Merge PDFs](https://tools.florianabry.me/merge-pdf) | Combine multiple PDF files into one in any order. |
+| [PDF Text Extractor](https://tools.florianabry.me/pdf-text-extractor) | Extract text from scanned PDFs using on-device OCR (Tesseract.js). 9 predefined languages + 75 more via searchable picker. Copy, download as Markdown or text PDF. |
 
 ### QR Code
 | Tool | Description |
@@ -22,16 +23,17 @@ A collection of small, self-contained web tools that run entirely in the browser
 | [QR Code Generator](https://tools.florianabry.me/qr-generator) | Generate a styled QR code — 4 dot styles, split outer/inner corner colors, transparent background, center logo, PNG (300/600/1024 px) or SVG export. Live preview. |
 | [QR Code Reader](https://tools.florianabry.me/qr-reader) | Upload an image containing a QR code to decode it. |
 
+### Markdown
+| Tool | Description |
+|---|---|
+| [Document to Markdown](https://tools.florianabry.me/document-to-markdown) | Convert PDFs, Word docs, and web pages to clean Markdown — ideal for AI workflows and Obsidian vaults. |
+| [Markdown Editor](https://tools.florianabry.me/markdown-editor) | Two-pane rich text ↔ Markdown editor with toolbar. Export as .md, HTML, or PDF. |
+
 ### Productivity
 | Tool | Status | Description |
 |---|---|---|
 | [Offline Examiner Tracker](https://tools.florianabry.me/offline-examiner-tracker) | Live | Excel spreadsheet for EPO patent examiners — tracks productivity goals accounting for actual vacation days. Download and run locally. |
 | Online Examiner Tracker | Coming soon | Browser-based version with persistent cloud storage via Google Drive OAuth — no server. |
-
-### Markdown *(coming soon)*
-| Tool | Description |
-|---|---|
-| Markdown Converter | Convert Markdown to HTML, PDF, or plain text — entirely in the browser. |
 
 ---
 
@@ -44,6 +46,9 @@ A collection of small, self-contained web tools that run entirely in the browser
 - **[JSZip](https://stuk.github.io/jszip/)** — bundle image exports into ZIP
 - **[qr-code-styling](https://github.com/kozakdenys/qr-code-styling)** — QR code generation with styling
 - **[jsQR](https://github.com/cozmo/jsQR)** — QR code decoding
+- **[Tesseract.js](https://github.com/naptha/tesseract.js)** — OCR engine (C++ Tesseract compiled to WASM), used by PDF Text Extractor
+- **[Tiptap](https://tiptap.dev)** + **[Turndown](https://github.com/mixmark-io/turndown)** + **[marked](https://marked.js.org)** — rich text / Markdown editor pipeline
+- **[mammoth](https://github.com/mwilliamson/mammoth.js)** — DOCX to HTML conversion
 
 ## Privacy
 

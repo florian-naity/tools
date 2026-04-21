@@ -50,7 +50,9 @@ tools/
 │   │   ├── merge-pdf.astro
 │   │   ├── offline-examiner-tracker.astro # live — static Excel file download
 │   │   ├── examiner-tracker.astro         # planned — Google OAuth + Drive (Online Examiner Tracker)
-│   │   └── markdown-converter.astro       # planned — Markdown to HTML/PDF/text
+│   │   ├── document-to-markdown.astro     # live — PDF/DOCX/HTML to Markdown
+│   │   ├── markdown-editor.astro          # live — rich text / Markdown two-pane editor
+│   │   └── pdf-text-extractor.astro       # live — OCR text extraction from scanned PDFs (Tesseract.js)
 │   └── styles/
 │       └── global.css           # Tailwind + DaisyUI theme
 ├── docs/
@@ -135,7 +137,9 @@ Each tool section uses a dedicated accent color applied consistently to icon bac
 | Merge PDFs | pdf-lib (MIT) | npm (`pdf-lib`) |
 | Online Examiner Tracker | Google Identity Services (Google) | CDN (`accounts.google.com/gsi/client`) |
 | Offline Examiner Tracker | — (static file download, no JS library) | `public/documents/` |
-| Markdown Converter | TBD | TBD |
+| Document to Markdown | pdfjs-dist (Apache 2.0) + mammoth (BSD-2) + turndown (MIT) + marked (MIT) + jspdf (MIT) | npm |
+| Markdown Editor | @tiptap/core + starter-kit + extensions (MIT) + turndown (MIT) + marked (MIT) + jspdf (MIT) | npm |
+| PDF Text Extractor | Tesseract.js (Apache 2.0) + PDF.js (Apache 2.0) + pdf-lib (MIT) | npm (`tesseract.js`, `pdfjs-dist`, `pdf-lib`) |
 
 ## Library Policy
 
@@ -197,6 +201,8 @@ This tool is the exception to the "no external dependencies" rule — it require
 ## WASM Policy
 
 If a future tool requires native-speed processing, use **Rust + wasm-pack**. Avoid C, Go, or Python WASM targets unless a Rust equivalent doesn't exist.
+
+**Exception — PDF Text Extractor:** uses **Tesseract.js** (C++ compiled to WASM) because no Rust OCR library provides comparable multilingual support (CJK, Cyrillic). New WASM tools should still prefer Rust.
 
 ## Deployment
 

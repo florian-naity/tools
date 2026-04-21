@@ -1,0 +1,603 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DropZone from '../components/DropZone.astro';
+---
+
+<BaseLayout title="PDF Text Extractor" description="Extract text from scanned PDFs using OCR. Supports 10 languages. Runs entirely in your browser.">
+
+  <!-- ─── Header ───────────────────────────────────────── -->
+  <div class="mb-10 animate-fade-in-up">
+    <a href="/" class="back-link">All Tools</a>
+    <div class="mt-4 flex items-start gap-4">
+      <div class="shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-orange-500/10 border border-orange-500/25 shadow-lg shadow-orange-500/5">
+        🔤
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-1">PDF Tools</p>
+        <h1 class="text-2xl font-bold leading-tight">PDF Text Extractor</h1>
+        <p class="text-sm text-base-content/55 mt-1 max-w-md">
+          Extract text from scanned PDFs using on-device OCR. Supports multiple languages. Your files never leave your device.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Language picker ──────────────────────────────── -->
+  <div class="animate-fade-in-up" style="animation-delay: 60ms;">
+    <p class="text-xs font-bold uppercase tracking-widest text-orange-400/70 mb-3">Languages</p>
+    <div class="flex flex-wrap gap-2" id="lang-picker">
+      <label class="lang-chip">
+        <input type="checkbox" value="eng" checked class="sr-only" />
+        <span>English</span>
+      </label>
+      <label class="lang-chip">
+        <input type="checkbox" value="fra" class="sr-only" />
+        <span>French</span>
+      </label>
+      <label class="lang-chip">
+        <input type="checkbox" value="deu" class="sr-only" />
+        <span>German</span>
+      </label>
+      <label class="lang-chip">
+        <input type="checkbox" value="spa" class="sr-only" />
+        <span>Spanish</span>
+      </label>
+      <label class="lang-chip">
+        <input type="checkbox" value="ita" class="sr-only" />
+        <span>Italian</span>
+      </label>
+      <label class="lang-chip">
+        <input type="checkbox" value="rus" class="sr-only" />
+        <span>Russian</span>
+      </label>
+      <label class="lang-chip">
+        <input type="checkbox" value="jpn" class="sr-only" />
+        <span>Japanese</span>
+      </label>
+      <label class="lang-chip">
+        <input type="checkbox" value="chi_sim" class="sr-only" />
+        <span>Chinese (Simplified)</span>
+      </label>
+      <!-- dynamic chips injected here by JS -->
+      <div class="relative" id="add-lang-container">
+        <button id="add-lang-btn" type="button" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border border-dashed border-orange-500/30 text-base-content/40 hover:border-orange-500/60 hover:text-orange-400 transition-colors">
+          + Add language
+        </button>
+        <div id="lang-dropdown" class="hidden absolute top-full left-0 mt-2 z-50 lang-dropdown">
+          <input id="lang-search" type="text" placeholder="Search languages…" autocomplete="off" />
+          <div id="lang-list"></div>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs text-base-content/30 mt-2">Language data is downloaded on first use and cached by your browser.</p>
+  </div>
+
+  <!-- ─── Drop zone ────────────────────────────────────── -->
+  <div class="mt-6 animate-fade-in-up" style="animation-delay: 80ms;">
+    <div class="relative rounded-2xl border border-orange-500/20 bg-base-200 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent pointer-events-none"></div>
+      <div class="relative p-5">
+        <DropZone id="pdf-input" accept="application/pdf" multiple={false} label="Click to upload a scanned PDF or drag & drop" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Progress ─────────────────────────────────────── -->
+  <div id="progress-section" class="hidden mt-6 animate-fade-in-up">
+    <div class="relative rounded-2xl border border-orange-500/20 bg-base-200 overflow-hidden p-5">
+      <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent pointer-events-none"></div>
+      <div class="relative flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <p id="progress-label" class="text-sm text-base-content/70 font-medium">Initialising…</p>
+          <p id="progress-pct" class="text-xs text-base-content/40 tabular-nums"></p>
+        </div>
+        <progress id="progress-bar" class="progress progress-warning w-full" value="0" max="100"></progress>
+        <p id="progress-sub" class="text-xs text-base-content/35"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Results ───────────────────────────────────────── -->
+  <div id="results" class="hidden mt-6 animate-fade-in-up">
+
+    <!-- Info + actions -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+      <div>
+        <p id="pdf-info" class="text-sm font-medium text-base-content/70"></p>
+        <p id="char-count" class="text-xs text-base-content/35 mt-0.5"></p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button id="copy-btn" class="btn btn-sm btn-ghost border border-orange-500/20 hover:border-orange-500/50 transition-colors">
+          Copy all
+        </button>
+        <button id="pdf-btn" class="btn btn-sm btn-ghost border border-orange-500/20 hover:border-orange-500/50 transition-colors">
+          Download text PDF
+        </button>
+        <button id="md-btn" class="btn btn-sm btn-primary">
+          Download .md
+        </button>
+      </div>
+    </div>
+
+    <!-- Non-Latin notice (shown only when relevant) -->
+    <div id="nonlatin-notice" class="hidden mb-4">
+      <div class="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+        <span class="shrink-0 text-amber-400">⚠</span>
+        <p class="text-sm text-amber-300/90 leading-relaxed">
+          The text PDF uses a basic Latin font — non-Latin characters will appear as <strong>?</strong>. Use <em>Copy all</em> or <em>Download .md</em> to preserve the full text.
+        </p>
+      </div>
+    </div>
+
+    <!-- Text panel -->
+    <div class="relative rounded-2xl border border-orange-500/20 bg-base-200 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent pointer-events-none"></div>
+      <pre id="text-output" class="relative p-5 max-h-[60vh] overflow-y-auto font-mono text-sm text-base-content/80 whitespace-pre-wrap leading-relaxed"></pre>
+    </div>
+  </div>
+
+  <!-- ─── Footer ────────────────────────────────────────── -->
+  <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <p class="text-xs text-base-content/30">Your files never leave your device.</p>
+    <p class="text-xs text-base-content/25">
+      Powered by <a href="https://tesseract-ocr.github.io/tessdoc/" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">Tesseract OCR</a> via <a href="https://github.com/naptha/tesseract.js" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">Tesseract.js</a> (Apache 2.0)
+      · <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0)
+      · <a href="https://pdf-lib.js.org/" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">pdf-lib</a> (MIT).
+    </p>
+  </div>
+
+</BaseLayout>
+
+<style>
+  .lang-chip {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  .lang-chip span {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid color-mix(in srgb, #fb923c 20%, transparent);
+    background: transparent;
+    color: oklch(var(--bc) / 0.5);
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .lang-chip input:checked + span {
+    background: color-mix(in srgb, #fb923c 15%, transparent);
+    border-color: color-mix(in srgb, #fb923c 50%, transparent);
+    color: #fb923c;
+  }
+  .lang-chip:hover span {
+    border-color: color-mix(in srgb, #fb923c 40%, transparent);
+    color: oklch(var(--bc) / 0.75);
+  }
+  .lang-chip input:checked:hover + span {
+    color: #fb923c;
+  }
+
+  /* Dynamic chips added via dropdown */
+  .lang-chip-dynamic {
+    display: inline-flex;
+    align-items: center;
+  }
+  .lang-chip-dynamic .chip-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid color-mix(in srgb, #fb923c 50%, transparent);
+    background: color-mix(in srgb, #fb923c 15%, transparent);
+    color: #fb923c;
+  }
+  .chip-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fb923c;
+    opacity: 0.55;
+    padding: 0 1px;
+    font-size: 13px;
+    line-height: 1;
+    transition: opacity 0.15s;
+  }
+  .chip-remove:hover { opacity: 1; }
+
+  /* Dropdown panel */
+  .lang-dropdown {
+    background: oklch(var(--b2));
+    border: 1px solid color-mix(in srgb, #fb923c 20%, transparent);
+    border-radius: 0.75rem;
+    min-width: 220px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    overflow: hidden;
+  }
+  #lang-search {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid color-mix(in srgb, #fb923c 15%, transparent);
+    color: oklch(var(--bc));
+    font-size: 0.8rem;
+    outline: none;
+  }
+  #lang-search::placeholder { color: oklch(var(--bc) / 0.3); }
+  #lang-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.25rem 0;
+  }
+  .lang-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+    color: oklch(var(--bc) / 0.7);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+  }
+  .lang-option:hover {
+    background: color-mix(in srgb, #fb923c 10%, transparent);
+    color: #fb923c;
+  }
+</style>
+
+<script>
+  import { createWorker } from 'tesseract.js';
+  import * as pdfjsLib from 'pdfjs-dist';
+  import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.js';
+
+  const progressSection = document.getElementById('progress-section') as HTMLDivElement;
+  const progressLabel   = document.getElementById('progress-label')   as HTMLParagraphElement;
+  const progressPct     = document.getElementById('progress-pct')     as HTMLParagraphElement;
+  const progressBar     = document.getElementById('progress-bar')     as HTMLProgressElement;
+  const progressSub     = document.getElementById('progress-sub')     as HTMLParagraphElement;
+  const results         = document.getElementById('results')          as HTMLDivElement;
+  const pdfInfo         = document.getElementById('pdf-info')         as HTMLParagraphElement;
+  const charCount       = document.getElementById('char-count')       as HTMLParagraphElement;
+  const textOutput      = document.getElementById('text-output')      as HTMLPreElement;
+  const copyBtn         = document.getElementById('copy-btn')         as HTMLButtonElement;
+  const pdfBtn          = document.getElementById('pdf-btn')          as HTMLButtonElement;
+  const mdBtn           = document.getElementById('md-btn')           as HTMLButtonElement;
+  const nonlatinNotice  = document.getElementById('nonlatin-notice')  as HTMLDivElement;
+
+  // ── Language dropdown ──────────────────────────────────
+  const ALL_LANGS = [
+    { code: 'afr', name: 'Afrikaans' },
+    { code: 'amh', name: 'Amharic' },
+    { code: 'ara', name: 'Arabic' },
+    { code: 'asm', name: 'Assamese' },
+    { code: 'aze', name: 'Azerbaijani' },
+    { code: 'bel', name: 'Belarusian' },
+    { code: 'ben', name: 'Bengali' },
+    { code: 'bos', name: 'Bosnian' },
+    { code: 'bul', name: 'Bulgarian' },
+    { code: 'cat', name: 'Catalan' },
+    { code: 'ces', name: 'Czech' },
+    { code: 'chi_sim', name: 'Chinese (Simplified)' },
+    { code: 'chi_tra', name: 'Chinese (Traditional)' },
+    { code: 'cym', name: 'Welsh' },
+    { code: 'dan', name: 'Danish' },
+    { code: 'ell', name: 'Greek' },
+    { code: 'epo', name: 'Esperanto' },
+    { code: 'est', name: 'Estonian' },
+    { code: 'eus', name: 'Basque' },
+    { code: 'fas', name: 'Persian' },
+    { code: 'fin', name: 'Finnish' },
+    { code: 'gle', name: 'Irish' },
+    { code: 'glg', name: 'Galician' },
+    { code: 'guj', name: 'Gujarati' },
+    { code: 'heb', name: 'Hebrew' },
+    { code: 'hin', name: 'Hindi' },
+    { code: 'hrv', name: 'Croatian' },
+    { code: 'hun', name: 'Hungarian' },
+    { code: 'hye', name: 'Armenian' },
+    { code: 'ind', name: 'Indonesian' },
+    { code: 'isl', name: 'Icelandic' },
+    { code: 'jav', name: 'Javanese' },
+    { code: 'kan', name: 'Kannada' },
+    { code: 'kat', name: 'Georgian' },
+    { code: 'kaz', name: 'Kazakh' },
+    { code: 'khm', name: 'Khmer' },
+    { code: 'kor', name: 'Korean' },
+    { code: 'lao', name: 'Lao' },
+    { code: 'lat', name: 'Latin' },
+    { code: 'lav', name: 'Latvian' },
+    { code: 'lit', name: 'Lithuanian' },
+    { code: 'mal', name: 'Malayalam' },
+    { code: 'mar', name: 'Marathi' },
+    { code: 'mkd', name: 'Macedonian' },
+    { code: 'mlt', name: 'Maltese' },
+    { code: 'mon', name: 'Mongolian' },
+    { code: 'msa', name: 'Malay' },
+    { code: 'mya', name: 'Burmese' },
+    { code: 'nep', name: 'Nepali' },
+    { code: 'nld', name: 'Dutch' },
+    { code: 'nor', name: 'Norwegian' },
+    { code: 'ori', name: 'Oriya' },
+    { code: 'pan', name: 'Punjabi' },
+    { code: 'pol', name: 'Polish' },
+    { code: 'por', name: 'Portuguese' },
+    { code: 'ron', name: 'Romanian' },
+    { code: 'san', name: 'Sanskrit' },
+    { code: 'sin', name: 'Sinhala' },
+    { code: 'slk', name: 'Slovak' },
+    { code: 'slv', name: 'Slovenian' },
+    { code: 'sqi', name: 'Albanian' },
+    { code: 'srp', name: 'Serbian' },
+    { code: 'swa', name: 'Swahili' },
+    { code: 'swe', name: 'Swedish' },
+    { code: 'tam', name: 'Tamil' },
+    { code: 'tel', name: 'Telugu' },
+    { code: 'tha', name: 'Thai' },
+    { code: 'tur', name: 'Turkish' },
+    { code: 'ukr', name: 'Ukrainian' },
+    { code: 'urd', name: 'Urdu' },
+    { code: 'uzb', name: 'Uzbek' },
+    { code: 'vie', name: 'Vietnamese' },
+    { code: 'yid', name: 'Yiddish' },
+  ];
+
+  const addLangBtn       = document.getElementById('add-lang-btn')    as HTMLButtonElement;
+  const langDropdown     = document.getElementById('lang-dropdown')    as HTMLDivElement;
+  const langSearch       = document.getElementById('lang-search')      as HTMLInputElement;
+  const langListEl       = document.getElementById('lang-list')        as HTMLDivElement;
+  const langPicker       = document.getElementById('lang-picker')      as HTMLDivElement;
+  const addLangContainer = document.getElementById('add-lang-container') as HTMLDivElement;
+
+  function getActiveCodes(): Set<string> {
+    const codes = new Set<string>();
+    langPicker.querySelectorAll<HTMLInputElement>('input[type="checkbox"]').forEach(el => codes.add(el.value));
+    return codes;
+  }
+
+  function renderLangList(query: string) {
+    const active = getActiveCodes();
+    const q = query.toLowerCase();
+    const filtered = ALL_LANGS.filter(l =>
+      !active.has(l.code) &&
+      (l.name.toLowerCase().includes(q) || l.code.toLowerCase().includes(q))
+    );
+    langListEl.innerHTML = '';
+    if (!filtered.length) {
+      langListEl.innerHTML = '<p style="padding:0.5rem 0.75rem;font-size:0.75rem;opacity:0.4;">No languages found.</p>';
+      return;
+    }
+    for (const lang of filtered) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lang-option';
+      btn.textContent = lang.name;
+      btn.addEventListener('click', () => addLang(lang));
+      langListEl.appendChild(btn);
+    }
+  }
+
+  function addLang(lang: { code: string; name: string }) {
+    const chip = document.createElement('span');
+    chip.className = 'lang-chip-dynamic';
+    chip.dataset.code = lang.code;
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = lang.code; cb.checked = true; cb.className = 'sr-only';
+    const inner = document.createElement('span');
+    inner.className = 'chip-inner';
+    inner.textContent = lang.name + ' ';
+    const rm = document.createElement('button');
+    rm.type = 'button'; rm.className = 'chip-remove'; rm.textContent = '×'; rm.setAttribute('aria-label', `Remove ${lang.name}`);
+    rm.addEventListener('click', () => {
+      chip.remove();
+      if (!langDropdown.classList.contains('hidden')) renderLangList(langSearch.value);
+    });
+    inner.appendChild(rm);
+    chip.appendChild(cb);
+    chip.appendChild(inner);
+    langPicker.insertBefore(chip, addLangContainer);
+    langDropdown.classList.add('hidden');
+    langSearch.value = '';
+  }
+
+  addLangBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const opening = langDropdown.classList.contains('hidden');
+    langDropdown.classList.toggle('hidden', !opening);
+    if (opening) { renderLangList(''); langSearch.focus(); }
+  });
+  langSearch.addEventListener('input', () => renderLangList(langSearch.value));
+  document.addEventListener('click', (e) => {
+    if (!addLangContainer.contains(e.target as Node)) langDropdown.classList.add('hidden');
+  });
+
+  // ── Extraction state ───────────────────────────────────
+  let pages: string[] = [];
+  let baseName = 'document';
+
+  function getSelectedLangs(): string[] {
+    const checked = document.querySelectorAll<HTMLInputElement>('#lang-picker input:checked');
+    const langs = Array.from(checked).map(el => el.value);
+    return langs.length ? langs : ['eng'];
+  }
+
+  function setProgress(label: string, pct: number, sub = '') {
+    progressLabel.textContent = label;
+    progressBar.value = pct;
+    progressPct.textContent = pct > 0 ? `${Math.round(pct)}%` : '';
+    progressSub.textContent = sub;
+  }
+
+  async function renderPageToCanvas(page: pdfjsLib.PDFPageProxy): Promise<HTMLCanvasElement> {
+    const viewport = page.getViewport({ scale: 2 }); // ~144 DPI — good for OCR
+    const canvas = document.createElement('canvas');
+    canvas.width  = viewport.width;
+    canvas.height = viewport.height;
+    await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport }).promise;
+    return canvas;
+  }
+
+  document.addEventListener('dropzone:files', async (e: Event) => {
+    const file = (e as CustomEvent<FileList>).detail[0];
+    if (!file || file.type !== 'application/pdf') return;
+
+    baseName = file.name.replace(/\.pdf$/i, '');
+    results.classList.add('hidden');
+    progressSection.classList.remove('hidden');
+    setProgress('Loading PDF…', 0);
+
+    const langs = getSelectedLangs();
+    const bytes = await file.arrayBuffer();
+    const pdf   = await pdfjsLib.getDocument({ data: bytes }).promise;
+    const total = pdf.numPages;
+
+    setProgress('Initialising OCR engine…', 2, `Language${langs.length > 1 ? 's' : ''}: ${langs.join(', ')}`);
+
+    let currentPage = 0;
+
+    const worker = await createWorker(langs, 1, {
+      workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@6/dist/worker.min.js',
+      corePath:   'https://cdn.jsdelivr.net/npm/tesseract.js-core@6',
+      langPath:   'https://tessdata.projectnaptha.com/4.0.0',
+      logger: (m) => {
+        if (m.status === 'loading tesseract core') {
+          setProgress('Downloading OCR engine…', 2 + m.progress * 5, 'First-time download, cached afterwards.');
+        } else if (m.status === 'loading language traineddata') {
+          setProgress('Downloading language data…', 7 + m.progress * 8, 'First-time download, cached afterwards.');
+        } else if (m.status === 'recognizing text') {
+          const base = 15 + (currentPage / total) * 85;
+          const pageShare = (1 / total) * 85;
+          setProgress(
+            `Recognising page ${currentPage + 1} of ${total}…`,
+            base + m.progress * pageShare,
+          );
+        }
+      },
+    });
+
+    pages = [];
+    let totalChars = 0;
+
+    for (let i = 1; i <= total; i++) {
+      currentPage = i - 1;
+      const page   = await pdf.getPage(i);
+      const canvas = await renderPageToCanvas(page);
+      const { data: { text } } = await worker.recognize(canvas);
+      const clean = text.trim();
+      pages.push(clean);
+      totalChars += clean.length;
+    }
+
+    await worker.terminate();
+
+    progressSection.classList.add('hidden');
+
+    textOutput.textContent = pages
+      .map((t, i) => `Page ${i + 1}\n${'─'.repeat(48)}\n${t || '(no text recognised on this page)'}`)
+      .join('\n\n');
+
+    pdfInfo.textContent  = `${file.name} — ${total} page${total !== 1 ? 's' : ''}`;
+    charCount.textContent = `${totalChars.toLocaleString()} characters extracted`;
+
+    const hasNonLatin = pages.some(p => /[^\x00-\xFF]/.test(p));
+    nonlatinNotice.classList.toggle('hidden', !hasNonLatin);
+
+    results.classList.remove('hidden');
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    const text = pages
+      .map((t, i) => `Page ${i + 1}\n${'─'.repeat(48)}\n${t || '(no text recognised on this page)'}`)
+      .join('\n\n');
+    await navigator.clipboard.writeText(text);
+    const orig = copyBtn.textContent!;
+    copyBtn.textContent = 'Copied!';
+    setTimeout(() => { copyBtn.textContent = orig; }, 1800);
+  });
+
+  mdBtn.addEventListener('click', () => {
+    const md = pages
+      .map((t, i) => `## Page ${i + 1}\n\n${t || '*No text recognised on this page.*'}`)
+      .join('\n\n---\n\n');
+    triggerDownload(`${baseName}.md`, md, 'text/markdown');
+  });
+
+  pdfBtn.addEventListener('click', async () => {
+    pdfBtn.disabled = true;
+    const orig = pdfBtn.textContent!;
+    pdfBtn.textContent = 'Generating…';
+
+    const doc    = await PDFDocument.create();
+    const font   = await doc.embedFont(StandardFonts.Helvetica);
+    const SIZE   = 11;
+    const MARGIN = 50;
+    const LINE_H = SIZE * 1.6;
+    const PW = 595, PH = 842;
+    const MAX_W = PW - MARGIN * 2;
+
+    function wrapText(raw: string): string[] {
+      const safe  = raw.replace(/[^\x20-\x7E\xA0-\xFF]/g, '?');
+      const words = safe.split(/\s+/);
+      const lines: string[] = [];
+      let line = '';
+      for (const word of words) {
+        const candidate = line ? `${line} ${word}` : word;
+        if (font.widthOfTextAtSize(candidate, SIZE) > MAX_W && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = candidate;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    for (let pi = 0; pi < pages.length; pi++) {
+      const allLines = [
+        `Page ${pi + 1}`,
+        '-'.repeat(60),
+        '',
+        ...wrapText(pages[pi] || '(no text recognised on this page)'),
+        '',
+      ];
+
+      let y = PH - MARGIN;
+      let pdfPage = doc.addPage([PW, PH]);
+
+      for (const l of allLines) {
+        if (y < MARGIN + LINE_H) {
+          pdfPage = doc.addPage([PW, PH]);
+          y = PH - MARGIN;
+        }
+        if (l) pdfPage.drawText(l, { x: MARGIN, y, font, size: SIZE, color: rgb(0.1, 0.1, 0.1) });
+        y -= LINE_H;
+      }
+    }
+
+    const pdfBytes = await doc.save();
+    triggerDownload(`${baseName}-text.pdf`, pdfBytes, 'application/pdf');
+
+    pdfBtn.textContent = orig;
+    pdfBtn.disabled = false;
+  });
+
+  function triggerDownload(name: string, data: string | Uint8Array, mime: string) {
+    const part: BlobPart = typeof data === 'string' ? data : new Uint8Array(data.buffer as ArrayBuffer, data.byteOffset, data.byteLength);
+    const blob = new Blob([part], { type: mime });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>

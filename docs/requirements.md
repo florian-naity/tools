@@ -120,6 +120,42 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 - Dashboard: cumulated production vs. adjusted objective, predicted productivity, YTD score
 - Charts: productivity trend, cumulated production, total production, research and exam breakdowns
 
+## Live Tools (Markdown)
+
+### 9. Document to Markdown
+- Input: PDF (text-based), DOCX, or HTML/HTM file — single file upload
+- Output: Markdown preview + download as `.md` or `.pdf`
+- Pipeline: PDF via `pdfjs-dist` (heading detection by font size), DOCX via `mammoth`, HTML via `DOMParser` + `turndown`
+- Libraries: `pdfjs-dist` (already installed), `mammoth` (BSD-2-Clause), `turndown` (MIT), `marked` (MIT), `jspdf` (MIT)
+- Page: `src/pages/document-to-markdown.astro`
+- Use cases: convert documents to Markdown for AI workflows and Obsidian vaults
+
+### 10. Markdown Editor
+- Two-pane editor: Rich Text (WYSIWYG, left) ↔ Markdown source (right), real-time bidirectional sync
+- Sync: Tiptap HTML → Turndown → Markdown (left→right); marked HTML → Tiptap setContent (right→left); 300 ms debounce with lock flag
+- Toolbar: Bold, Italic, H1–H3, HR, Blockquote, Code, Bullet/Ordered list, Link (popover), Table (3×3 insert)
+- Export: Copy MD, Copy HTML (semantic tags, email-compatible), Download .md, Download PDF (jsPDF with window.print() fallback for long documents)
+- Libraries: `@tiptap/core` + `@tiptap/starter-kit` + `@tiptap/extension-link` + `@tiptap/extension-table*` (MIT), `turndown` (MIT), `marked` (MIT), `jspdf` (MIT)
+- Page: `src/pages/markdown-editor.astro`
+- Mobile: panes stack vertically, each min-height 40vh
+
+## Live Tools (PDF — OCR)
+
+### 11. PDF Text Extractor
+- Input: scanned PDF or image-only PDF (single file)
+- Output: extracted text displayed in-page, downloadable as `.md` or clean text PDF
+- Engine: **Tesseract.js** (Apache 2.0) — C++ Tesseract OCR compiled to WASM via Emscripten
+- Language support: 9 predefined chips (EN, FR, DE, ES, IT, RU, JA, ZH-Simp) + searchable dropdown of ~75 additional Tesseract languages; multi-select supported
+- Pipeline: PDF.js renders each page to canvas at 2× scale → Tesseract worker processes canvas → text assembled per page
+- Language data (~8–20 MB per language) fetched on demand from `tessdata.projectnaptha.com` CDN; cached by browser after first use
+- Tesseract.js WASM core fetched from `cdn.jsdelivr.net` on first use; cached by browser
+- Actions: Copy all · Download text PDF (pdf-lib, Latin fonts only — non-Latin chars noted) · Download .md
+- Non-Latin warning: amber banner shown when downloaded text PDF may have replaced characters
+- Libraries: `tesseract.js` (Apache 2.0), `pdfjs-dist` (Apache 2.0), `pdf-lib` (MIT)
+- Page: `src/pages/pdf-text-extractor.astro`
+- Accent: orange (PDF section)
+- WASM note: Tesseract.js uses C++ WASM as a justified exception to the Rust WASM policy — no Rust OCR library provides comparable CJK/Cyrillic accuracy
+
 ## Planned Tools
 
 ### 8. Online Examiner Tracker
@@ -142,30 +178,6 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 - Scopes required: `https://www.googleapis.com/auth/drive.appdata`
 - Data format: JSON (structured records, easy to migrate)
 - No server, no database — the app is a pure frontend that reads/writes the user's own Drive
-
-### 9. Document to Markdown
-- Input: PDF (text-based), DOCX, or HTML/HTM file — single file upload
-- Output: Markdown preview + download as `.md` or `.pdf`
-- Pipeline: PDF via `pdfjs-dist` (heading detection by font size), DOCX via `mammoth`, HTML via `DOMParser` + `turndown`
-- Libraries: `pdfjs-dist` (already installed), `mammoth` (BSD-2-Clause), `turndown` (MIT), `marked` (MIT), `jspdf` (MIT)
-- Page: `src/pages/document-to-markdown.astro`
-- Use cases: convert documents to Markdown for AI workflows and Obsidian vaults
-
-### 10. Markdown Editor
-- Two-pane editor: Rich Text (WYSIWYG, left) ↔ Markdown source (right), real-time bidirectional sync
-- Sync: Tiptap HTML → Turndown → Markdown (left→right); marked HTML → Tiptap setContent (right→left); 300 ms debounce with lock flag
-- Toolbar: Bold, Italic, H1–H3, HR, Blockquote, Code, Bullet/Ordered list, Link (popover), Table (3×3 insert)
-- Export: Copy MD, Copy HTML (semantic tags, email-compatible), Download .md, Download PDF (jsPDF with window.print() fallback for long documents)
-- Libraries: `@tiptap/core` + `@tiptap/starter-kit` + `@tiptap/extension-link` + `@tiptap/extension-table*` (MIT), `turndown` (MIT), `marked` (MIT), `jspdf` (MIT)
-- Page: `src/pages/markdown-editor.astro`
-- Mobile: panes stack vertically, each min-height 40vh
-
-### 11. PDF OCR — Scanned PDF to Text (planned, PDF tool suite)
-- Input: scanned PDF or image-only PDF
-- Output: selectable text PDF or plain text / Markdown
-- Engine: Rust-based OCR compiled to WASM via `wasm-pack` (preferred over Tesseract.js C++ WASM for bundle size and Rust-stack consistency)
-- Kept as a separate tool from Document to Markdown to avoid adding a large WASM payload to that page
-- Accent: orange (PDF section)
 
 ## Library Policy
 

@@ -132,6 +132,46 @@ Drag-and-drop thumbnail grid. Used for both Images→PDF and Reorder & Delete.
 
 ---
 
+---
+
+## Tool 7 — PDF Text Extractor
+
+**Page:** `src/pages/pdf-text-extractor.astro`
+
+### Purpose
+Extract text from scanned or image-only PDFs using on-device OCR. Intended for PDFs that have no embedded text layer.
+
+### Input
+- 1 scanned PDF via DropZone (single)
+- Language picker: 9 predefined chips (EN, FR, DE, ES, IT, RU, JA, ZH-Simplified) + searchable dropdown of ~75 additional Tesseract languages; multi-select supported for bilingual documents
+
+### Pipeline
+1. PDF.js renders each page to an off-screen canvas at 2× scale (~144 DPI — optimal for Tesseract)
+2. Tesseract.js Web Worker processes each canvas sequentially
+3. Text assembled page-by-page with per-page progress reported
+
+### Output & Actions
+- Scrollable text panel (monospace, paginated with `Page N` separators)
+- **Copy all** — full text to clipboard
+- **Download text PDF** — clean A4 PDF via pdf-lib (Helvetica, Latin only; non-Latin characters replaced with `?`, notice page appended if relevant)
+- **Download .md** — Markdown with `## Page N` headings and `---` dividers; full Unicode
+
+### External CDN requests (first use only, then browser-cached)
+- Tesseract.js WASM core: `cdn.jsdelivr.net/npm/tesseract.js-core@6`
+- Tesseract.js worker script: `cdn.jsdelivr.net/npm/tesseract.js@6`
+- Language training data: `tessdata.projectnaptha.com/4.0.0` (~8–20 MB per language)
+
+### Libraries
+| Package | License | Role |
+|---|---|---|
+| `tesseract.js` | Apache 2.0 | OCR engine (C++ Tesseract compiled to WASM) |
+| `pdfjs-dist` | Apache 2.0 | Render PDF pages to canvas |
+| `pdf-lib` | MIT | Generate the text PDF output |
+
+---
+
 ## Privacy Note
 
 All PDF processing happens in the browser using JavaScript. No file is ever uploaded to a server. PDF.js and pdf-lib run entirely client-side.
+
+The PDF Text Extractor additionally downloads Tesseract OCR components from external CDNs on first use — see the Datenschutzerklärung for full disclosure.

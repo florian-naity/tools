@@ -33,6 +33,7 @@
     "pdfjs-dist": "^5.6.205",
     "qr-code-styling": "^1.9.2",
     "tailwindcss": "^4.2.2",
+    "tesseract.js": "^7.0.0",
     "turndown": "^7.2.4"
   }
 }
