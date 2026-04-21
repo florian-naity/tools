@@ -127,7 +127,7 @@ import DropZone from '../components/DropZone.astro';
   import { marked } from 'marked';
   import jsPDF from 'jspdf';
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.mjs';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.js';
 
   // ── DOM refs ─────────────────────────────────────────────
   const fileInfo        = document.getElementById('file-info')!;

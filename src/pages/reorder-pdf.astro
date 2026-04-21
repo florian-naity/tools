@@ -73,7 +73,7 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
   import * as pdfjsLib from 'pdfjs-dist';
   import { PDFDocument } from 'pdf-lib';
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.mjs';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.js';
 
   const editor = document.getElementById('editor') as HTMLDivElement;
   const pageCount = document.getElementById('page-count') as HTMLParagraphElement;

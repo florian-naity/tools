@@ -99,7 +99,7 @@ import DropZone from '../components/DropZone.astro';
   import * as pdfjsLib from 'pdfjs-dist';
   import JSZip from 'jszip';
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.mjs';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.js';
 
   const options = document.getElementById('options') as HTMLDivElement;
   const pdfInfo = document.getElementById('pdf-info') as HTMLParagraphElement;
