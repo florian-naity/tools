@@ -143,11 +143,29 @@ All tools process data entirely in the browser. No file is uploaded to any serve
 - Data format: JSON (structured records, easy to migrate)
 - No server, no database — the app is a pure frontend that reads/writes the user's own Drive
 
-### 9. Markdown Converter
-- Input: Markdown text (typed or pasted)
-- Output: HTML, PDF, or plain text download — entirely in the browser
-- Library: TBD
-- Page: `src/pages/markdown-converter.astro`
+### 9. Document to Markdown
+- Input: PDF (text-based), DOCX, or HTML/HTM file — single file upload
+- Output: Markdown preview + download as `.md` or `.pdf`
+- Pipeline: PDF via `pdfjs-dist` (heading detection by font size), DOCX via `mammoth`, HTML via `DOMParser` + `turndown`
+- Libraries: `pdfjs-dist` (already installed), `mammoth` (BSD-2-Clause), `turndown` (MIT), `marked` (MIT), `jspdf` (MIT)
+- Page: `src/pages/document-to-markdown.astro`
+- Use cases: convert documents to Markdown for AI workflows and Obsidian vaults
+
+### 10. Markdown Editor
+- Two-pane editor: Rich Text (WYSIWYG, left) ↔ Markdown source (right), real-time bidirectional sync
+- Sync: Tiptap HTML → Turndown → Markdown (left→right); marked HTML → Tiptap setContent (right→left); 300 ms debounce with lock flag
+- Toolbar: Bold, Italic, H1–H3, HR, Blockquote, Code, Bullet/Ordered list, Link (popover), Table (3×3 insert)
+- Export: Copy MD, Copy HTML (semantic tags, email-compatible), Download .md, Download PDF (jsPDF with window.print() fallback for long documents)
+- Libraries: `@tiptap/core` + `@tiptap/starter-kit` + `@tiptap/extension-link` + `@tiptap/extension-table*` (MIT), `turndown` (MIT), `marked` (MIT), `jspdf` (MIT)
+- Page: `src/pages/markdown-editor.astro`
+- Mobile: panes stack vertically, each min-height 40vh
+
+### 11. PDF OCR — Scanned PDF to Text (planned, PDF tool suite)
+- Input: scanned PDF or image-only PDF
+- Output: selectable text PDF or plain text / Markdown
+- Engine: Rust-based OCR compiled to WASM via `wasm-pack` (preferred over Tesseract.js C++ WASM for bundle size and Rust-stack consistency)
+- Kept as a separate tool from Document to Markdown to avoid adding a large WASM payload to that page
+- Accent: orange (PDF section)
 
 ## Library Policy
 

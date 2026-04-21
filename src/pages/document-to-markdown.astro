@@ -1,0 +1,405 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DropZone from '../components/DropZone.astro';
+---
+
+<BaseLayout title="Document to Markdown" description="Convert PDFs, Word documents, and web pages to clean Markdown. Runs entirely in your browser.">
+
+  <!-- ─── Header ───────────────────────────────────────── -->
+  <div class="mb-10 animate-fade-in-up">
+    <a href="/" class="back-link">All Tools</a>
+    <div class="mt-4 flex items-start gap-4">
+      <div class="shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-sky-500/10 border border-sky-500/25 shadow-lg shadow-sky-500/5">
+        📄
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-sky-400 mb-1">Markdown</p>
+        <h1 class="text-2xl font-bold leading-tight">Document to Markdown</h1>
+        <p class="text-sm text-base-content/55 mt-1 max-w-md">
+          Upload a PDF, Word document, or HTML file and get clean Markdown — ideal for AI workflows and Obsidian vaults.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Main grid ────────────────────────────────────── -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Left: Drop zone -->
+    <div class="animate-fade-in-up" style="animation-delay: 80ms;">
+      <div class="relative rounded-2xl border border-sky-500/20 bg-base-200 overflow-hidden h-full">
+        <div class="absolute inset-0 bg-gradient-to-br from-sky-500/5 via-transparent to-transparent pointer-events-none"></div>
+        <div class="relative p-5 flex flex-col h-full gap-4">
+          <p class="text-xs font-bold uppercase tracking-widest text-sky-400">Input</p>
+          <DropZone id="doc-input" accept=".pdf,.docx,.html,.htm" label="Click to upload or drag & drop" />
+          <div id="file-info" class="hidden text-sm text-base-content/50 text-center"></div>
+          <div id="convert-status" class="hidden">
+            <div class="flex items-center gap-2 text-sm text-base-content/50">
+              <span class="loading loading-spinner loading-sm"></span>
+              <span id="convert-msg">Converting…</span>
+            </div>
+          </div>
+          <div id="convert-error" class="hidden text-sm text-error"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Output panel -->
+    <div class="animate-fade-in-up" style="animation-delay: 120ms;">
+      <div class="relative rounded-2xl border border-sky-500/20 bg-base-200 overflow-hidden h-full">
+        <div class="absolute inset-0 bg-gradient-to-br from-sky-500/5 via-transparent to-transparent pointer-events-none"></div>
+        <div class="relative p-5 flex flex-col h-full gap-4">
+
+          <!-- Header row: label + tabs -->
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <p class="text-xs font-bold uppercase tracking-widest text-sky-400">Output</p>
+            <div id="tab-row" class="hidden flex gap-1">
+              <button id="tab-preview" class="btn btn-xs btn-primary">Preview</button>
+              <button id="tab-source" class="btn btn-xs btn-ghost">Source</button>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div id="output-empty" class="flex-1 flex items-center justify-center text-base-content/20 text-sm text-center select-none">
+            Upload a file to see the Markdown output here.
+          </div>
+
+          <!-- Warnings -->
+          <div id="output-warnings" class="hidden flex flex-col gap-2"></div>
+
+          <!-- Preview pane -->
+          <div id="output-preview" class="hidden flex-1 overflow-y-auto md-preview rounded-lg bg-base-100/50 p-4 min-h-48"></div>
+
+          <!-- Source pane -->
+          <pre id="output-source" class="hidden flex-1 overflow-auto rounded-lg bg-base-100/50 p-4 text-xs font-mono text-base-content/80 whitespace-pre-wrap min-h-48"></pre>
+
+          <!-- Action buttons -->
+          <div id="action-row" class="hidden flex flex-wrap gap-2">
+            <button id="btn-copy" class="btn btn-sm btn-ghost flex-1">Copy</button>
+            <button id="btn-download-md" class="btn btn-sm btn-outline btn-primary flex-1">↓ .md</button>
+            <button id="btn-download-pdf" class="btn btn-sm btn-ghost flex-1">↓ PDF</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── Footer ───────────────────────────────────────── -->
+  <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <p class="text-xs text-base-content/30">Your files never leave your device.</p>
+    <p class="text-xs text-base-content/25">
+      Powered by
+      <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">pdf.js</a> (Apache 2.0),
+      <a href="https://github.com/mwilliamson/mammoth.js" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">mammoth.js</a> (BSD-2-Clause),
+      <a href="https://github.com/mixmark-io/turndown" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">Turndown</a> (MIT).
+    </p>
+  </div>
+
+</BaseLayout>
+
+<style>
+  .md-preview :global(h1) { font-size: 1.5em; font-weight: 700; margin: 0.6em 0 0.3em; }
+  .md-preview :global(h2) { font-size: 1.25em; font-weight: 700; margin: 0.6em 0 0.3em; border-bottom: 1px solid oklch(var(--b3)); padding-bottom: 0.2em; }
+  .md-preview :global(h3) { font-size: 1.1em; font-weight: 600; margin: 0.5em 0 0.25em; }
+  .md-preview :global(p)  { margin: 0 0 0.6em; line-height: 1.6; }
+  .md-preview :global(ul) { list-style: disc; padding-left: 1.5em; margin-bottom: 0.6em; }
+  .md-preview :global(ol) { list-style: decimal; padding-left: 1.5em; margin-bottom: 0.6em; }
+  .md-preview :global(li) { margin-bottom: 0.2em; }
+  .md-preview :global(blockquote) { border-left: 3px solid oklch(var(--s)); padding-left: 1em; color: oklch(var(--bc) / 0.6); margin: 0 0 0.6em; }
+  .md-preview :global(code) { font-family: monospace; background: oklch(var(--b3)); padding: 0.1em 0.3em; border-radius: 0.25em; font-size: 0.85em; }
+  .md-preview :global(pre) { background: oklch(var(--b3)); padding: 0.75em 1em; border-radius: 0.5em; overflow-x: auto; margin-bottom: 0.6em; }
+  .md-preview :global(pre code) { background: none; padding: 0; }
+  .md-preview :global(table) { width: 100%; border-collapse: collapse; margin-bottom: 0.6em; font-size: 0.875em; }
+  .md-preview :global(th), .md-preview :global(td) { border: 1px solid oklch(var(--b3)); padding: 0.4em 0.6em; text-align: left; }
+  .md-preview :global(th) { background: oklch(var(--b3) / 0.5); font-weight: 600; }
+  .md-preview :global(a) { color: oklch(var(--s)); text-decoration: underline; }
+  .md-preview :global(hr) { border: none; border-top: 1px solid oklch(var(--b3)); margin: 1em 0; }
+  .md-preview :global(strong) { font-weight: 700; }
+  .md-preview :global(em) { font-style: italic; }
+</style>
+
+<script>
+  import * as pdfjsLib from 'pdfjs-dist';
+  import mammoth from 'mammoth';
+  import TurndownService from 'turndown';
+  import { marked } from 'marked';
+  import jsPDF from 'jspdf';
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.mjs';
+
+  // ── DOM refs ─────────────────────────────────────────────
+  const fileInfo        = document.getElementById('file-info')!;
+  const convertStatus   = document.getElementById('convert-status')!;
+  const convertMsg      = document.getElementById('convert-msg')!;
+  const convertError    = document.getElementById('convert-error')!;
+  const tabRow          = document.getElementById('tab-row')!;
+  const tabPreview      = document.getElementById('tab-preview')!;
+  const tabSource       = document.getElementById('tab-source')!;
+  const outputEmpty     = document.getElementById('output-empty')!;
+  const outputWarnings  = document.getElementById('output-warnings')!;
+  const outputPreview   = document.getElementById('output-preview')!;
+  const outputSource    = document.getElementById('output-source')!;
+  const actionRow       = document.getElementById('action-row')!;
+  const btnCopy         = document.getElementById('btn-copy')!;
+  const btnDownloadMd   = document.getElementById('btn-download-md')!;
+  const btnDownloadPdf  = document.getElementById('btn-download-pdf')!;
+
+  let currentMarkdown = '';
+  let currentFilename = '';
+  let currentHtml = '';
+
+  // ── Tab switching ─────────────────────────────────────────
+  function showPreview() {
+    outputPreview.classList.remove('hidden');
+    outputSource.classList.add('hidden');
+    tabPreview.classList.add('btn-primary');
+    tabPreview.classList.remove('btn-ghost');
+    tabSource.classList.add('btn-ghost');
+    tabSource.classList.remove('btn-primary');
+  }
+
+  function showSource() {
+    outputSource.classList.remove('hidden');
+    outputPreview.classList.add('hidden');
+    tabSource.classList.add('btn-primary');
+    tabSource.classList.remove('btn-ghost');
+    tabPreview.classList.add('btn-ghost');
+    tabPreview.classList.remove('btn-primary');
+  }
+
+  tabPreview.addEventListener('click', showPreview);
+  tabSource.addEventListener('click', showSource);
+
+  // ── PDF → Markdown ────────────────────────────────────────
+  async function pdfToMarkdown(file: File): Promise<{ markdown: string; warnings: string[] }> {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    // First pass: gather all items to compute average font size
+    const allPages: { text: string; fontSize: number; y: number; x: number }[][] = [];
+    let totalFontSize = 0;
+    let fontCount = 0;
+    let emptyPageCount = 0;
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const items = (content.items as any[])
+        .filter(item => 'str' in item && item.str.trim())
+        .map(item => ({
+          text: item.str as string,
+          fontSize: Math.abs(item.transform[3]) as number,
+          y: item.transform[5] as number,
+          x: item.transform[4] as number,
+        }));
+      if (items.length === 0) emptyPageCount++;
+      allPages.push(items);
+      items.forEach(it => { totalFontSize += it.fontSize; fontCount++; });
+    }
+
+    const avgSize = fontCount > 0 ? totalFontSize / fontCount : 12;
+    const baseName = file.name.replace(/\.pdf$/i, '');
+    const lines: string[] = [`# ${baseName}\n`];
+
+    // Second pass: reconstruct structure
+    for (let pi = 0; pi < allPages.length; pi++) {
+      if (pi > 0) lines.push('\n---\n');
+
+      // Group text items into visual lines by y-coordinate proximity
+      const lineGroups: { y: number; items: typeof allPages[0] }[] = [];
+      for (const item of allPages[pi]) {
+        const grp = lineGroups.find(g => Math.abs(g.y - item.y) < 4);
+        if (grp) grp.items.push(item);
+        else lineGroups.push({ y: item.y, items: [item] });
+      }
+      lineGroups.sort((a, b) => b.y - a.y); // PDF y-axis goes up
+
+      let prevY = Infinity;
+      for (const grp of lineGroups) {
+        const lineText = grp.items.sort((a, b) => a.x - b.x).map(i => i.text).join(' ').trim();
+        if (!lineText) continue;
+
+        const maxSize = Math.max(...grp.items.map(i => i.fontSize));
+        const gap = prevY - grp.y;
+
+        if (maxSize >= avgSize * 1.5) {
+          lines.push(`\n## ${lineText}\n`);
+        } else if (maxSize >= avgSize * 1.25) {
+          lines.push(`\n### ${lineText}\n`);
+        } else if (/^[•●\-–]\s/.test(lineText)) {
+          lines.push(`- ${lineText.replace(/^[•●\-–]\s+/, '')}`);
+        } else if (/^\d+[.)]\s/.test(lineText)) {
+          lines.push(lineText);
+        } else {
+          if (gap > 18 && prevY !== Infinity) lines.push('');
+          lines.push(lineText);
+        }
+
+        prevY = grp.y;
+      }
+    }
+
+    const markdown = lines.join('\n');
+    const warnings: string[] = [];
+
+    // Warn if pages had no extractable text (images, scanned content)
+    if (emptyPageCount > 0) {
+      const label = emptyPageCount === 1 ? '1 page' : `${emptyPageCount} pages`;
+      warnings.push(`${label} contained no extractable text — images and scanned content are not supported and were skipped.`);
+    }
+
+    // Warn if output has a high density of replacement characters (garbled encoding)
+    const totalChars = markdown.replace(/\s/g, '').length;
+    const questionMarks = (markdown.match(/\?/g) ?? []).length;
+    if (totalChars > 50 && questionMarks / totalChars > 0.05) {
+      warnings.push('Many characters appear unreadable (shown as "?"). This PDF may use an unsupported font encoding — common with older CJK documents.');
+    }
+
+    return { markdown, warnings };
+  }
+
+  // ── DOCX → Markdown ───────────────────────────────────────
+  async function docxToMarkdown(file: File): Promise<string> {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.convertToMarkdown({ arrayBuffer });
+    return result.value;
+  }
+
+  // ── HTML → Markdown ───────────────────────────────────────
+  async function htmlToMarkdown(file: File): Promise<string> {
+    const text = await file.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+
+    // Strip noise elements
+    ['script', 'style', 'nav', 'footer', 'header', 'aside', 'noscript'].forEach(tag => {
+      doc.querySelectorAll(tag).forEach(el => el.remove());
+    });
+
+    const td = new TurndownService({ headingStyle: 'atx', bulletListMarker: '-', codeBlockStyle: 'fenced' });
+    return td.turndown(doc.body);
+  }
+
+  // ── Render result ─────────────────────────────────────────
+  async function renderResult(md: string, filename: string, warnings: string[] = []) {
+    currentMarkdown = md;
+    currentFilename = filename.replace(/\.[^.]+$/, '');
+
+    currentHtml = await marked.parse(md);
+    outputPreview.innerHTML = currentHtml;
+    outputSource.textContent = md;
+
+    // Render warnings
+    outputWarnings.innerHTML = '';
+    if (warnings.length > 0) {
+      warnings.forEach(msg => {
+        const el = document.createElement('div');
+        el.className = 'flex items-start gap-2 rounded-lg bg-warning/10 border border-warning/30 px-3 py-2 text-xs text-warning';
+        el.innerHTML = `<span class="shrink-0 mt-0.5">⚠️</span><span>${msg}</span>`;
+        outputWarnings.appendChild(el);
+      });
+      outputWarnings.classList.remove('hidden');
+    } else {
+      outputWarnings.classList.add('hidden');
+    }
+
+    outputEmpty.classList.add('hidden');
+    tabRow.classList.remove('hidden');
+    actionRow.classList.remove('hidden');
+    showPreview();
+  }
+
+  // ── File conversion entry point ───────────────────────────
+  async function handleFile(file: File) {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    fileInfo.textContent = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+    fileInfo.classList.remove('hidden');
+    convertError.classList.add('hidden');
+    convertStatus.classList.remove('hidden');
+    convertMsg.textContent = 'Converting…';
+
+    try {
+      let md = '';
+      let warnings: string[] = [];
+      if (ext === 'pdf') {
+        ({ markdown: md, warnings } = await pdfToMarkdown(file));
+      } else if (ext === 'docx') {
+        md = await docxToMarkdown(file);
+      } else if (ext === 'html' || ext === 'htm') {
+        md = await htmlToMarkdown(file);
+      } else {
+        throw new Error(`Unsupported format: .${ext}`);
+      }
+      await renderResult(md, file.name, warnings);
+    } catch (err) {
+      convertError.textContent = 'Error: ' + (err as Error).message;
+      convertError.classList.remove('hidden');
+    } finally {
+      convertStatus.classList.add('hidden');
+    }
+  }
+
+  // ── DropZone listener ─────────────────────────────────────
+  document.addEventListener('dropzone:files', (e: Event) => {
+    const files = (e as CustomEvent<FileList>).detail;
+    if (files.length) handleFile(files[0]);
+  });
+
+  // ── Copy ──────────────────────────────────────────────────
+  btnCopy.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(currentMarkdown);
+    const orig = btnCopy.textContent;
+    btnCopy.textContent = 'Copied!';
+    setTimeout(() => { btnCopy.textContent = orig; }, 1500);
+  });
+
+  // ── Download .md ──────────────────────────────────────────
+  btnDownloadMd.addEventListener('click', () => {
+    const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentFilename}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ── Download PDF ──────────────────────────────────────────
+  btnDownloadPdf.addEventListener('click', async () => {
+    btnDownloadPdf.textContent = 'Generating…';
+    (btnDownloadPdf as HTMLButtonElement).disabled = true;
+
+    try {
+      const container = document.createElement('div');
+      container.style.cssText = 'font-family: Georgia, serif; font-size: 13px; line-height: 1.6; color: #111; max-width: 680px;';
+      container.innerHTML = currentHtml;
+
+      // Apply basic inline styles for email/PDF compatibility
+      container.querySelectorAll('h1').forEach(el => Object.assign((el as HTMLElement).style, { fontSize: '22px', fontWeight: '700', margin: '16px 0 8px' }));
+      container.querySelectorAll('h2').forEach(el => Object.assign((el as HTMLElement).style, { fontSize: '18px', fontWeight: '700', margin: '14px 0 6px' }));
+      container.querySelectorAll('h3').forEach(el => Object.assign((el as HTMLElement).style, { fontSize: '15px', fontWeight: '600', margin: '12px 0 4px' }));
+      container.querySelectorAll('table').forEach(el => Object.assign((el as HTMLElement).style, { borderCollapse: 'collapse', width: '100%', margin: '10px 0' }));
+      container.querySelectorAll('th, td').forEach(el => Object.assign((el as HTMLElement).style, { border: '1px solid #ccc', padding: '6px 10px' }));
+      container.querySelectorAll('th').forEach(el => Object.assign((el as HTMLElement).style, { background: '#f0f0f0', fontWeight: '600' }));
+      container.querySelectorAll('blockquote').forEach(el => Object.assign((el as HTMLElement).style, { borderLeft: '3px solid #aaa', paddingLeft: '12px', color: '#555', margin: '8px 0' }));
+      container.querySelectorAll('code').forEach(el => Object.assign((el as HTMLElement).style, { fontFamily: 'monospace', background: '#f4f4f4', padding: '1px 4px', borderRadius: '3px' }));
+
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      doc.html(container, {
+        callback: (pdf) => {
+          pdf.save(`${currentFilename}.pdf`);
+          btnDownloadPdf.textContent = '↓ PDF';
+          (btnDownloadPdf as HTMLButtonElement).disabled = false;
+        },
+        margin: [15, 15, 15, 15],
+        width: 170,
+        windowWidth: 700,
+      });
+    } catch {
+      btnDownloadPdf.textContent = '↓ PDF';
+      (btnDownloadPdf as HTMLButtonElement).disabled = false;
+    }
+  });
+</script>

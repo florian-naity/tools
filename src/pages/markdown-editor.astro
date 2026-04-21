@@ -1,0 +1,459 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Markdown Editor" description="Bidirectional rich text ↔ Markdown editor. Paste rich content and get Markdown, or write Markdown and copy formatted HTML.">
+
+  <!-- ─── Header ───────────────────────────────────────── -->
+  <div class="mb-8 animate-fade-in-up">
+    <a href="/" class="back-link">All Tools</a>
+    <div class="mt-4 flex items-start gap-4">
+      <div class="shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-sky-500/10 border border-sky-500/25 shadow-lg shadow-sky-500/5">
+        ✍️
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-sky-400 mb-1">Markdown</p>
+        <h1 class="text-2xl font-bold leading-tight">Markdown Editor</h1>
+        <p class="text-sm text-base-content/55 mt-1 max-w-md">
+          Write rich text and get Markdown instantly — or paste Markdown and copy formatted HTML. Both sides sync in real time.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Editor card ──────────────────────────────────── -->
+  <div class="animate-fade-in-up" style="animation-delay: 80ms;">
+    <div class="relative rounded-2xl border border-sky-500/20 bg-base-200 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-sky-500/5 via-transparent to-transparent pointer-events-none"></div>
+      <div class="relative flex flex-col">
+
+        <!-- Toolbar -->
+        <div id="toolbar" class="flex flex-wrap items-center gap-1 px-3 py-2 border-b border-sky-500/15 bg-base-300/40">
+
+          <!-- Format group -->
+          <button data-cmd="bold"          class="tb-btn font-bold" title="Bold (Ctrl+B)">B</button>
+          <button data-cmd="italic"        class="tb-btn italic"    title="Italic (Ctrl+I)">I</button>
+          <span class="tb-sep"></span>
+
+          <!-- Headings -->
+          <button data-cmd="h1"            class="tb-btn text-xs"  title="Heading 1">H1</button>
+          <button data-cmd="h2"            class="tb-btn text-xs"  title="Heading 2">H2</button>
+          <button data-cmd="h3"            class="tb-btn text-xs"  title="Heading 3">H3</button>
+          <span class="tb-sep"></span>
+
+          <!-- Structure -->
+          <button data-cmd="blockquote"    class="tb-btn text-base" title="Blockquote">"</button>
+          <button data-cmd="code"          class="tb-btn font-mono text-xs" title="Inline code">`</button>
+          <button data-cmd="hr"            class="tb-btn text-base" title="Horizontal rule">—</button>
+          <span class="tb-sep"></span>
+
+          <!-- Lists -->
+          <button data-cmd="bulletList"    class="tb-btn text-base" title="Bullet list">≡</button>
+          <button data-cmd="orderedList"   class="tb-btn text-xs"   title="Ordered list">1.</button>
+          <span class="tb-sep"></span>
+
+          <!-- Insert -->
+          <button data-cmd="link"          class="tb-btn text-base" title="Insert link">🔗</button>
+          <button data-cmd="table"         class="tb-btn text-base" title="Insert 3×3 table">⊞</button>
+          <span class="tb-sep"></span>
+
+          <!-- Export group (pushed right) -->
+          <div class="ml-auto flex flex-wrap gap-1">
+            <button id="btn-copy-md"   class="tb-export-btn">Copy MD</button>
+            <button id="btn-copy-html" class="tb-export-btn">Copy HTML</button>
+            <button id="btn-dl-md"     class="tb-export-btn">↓ .md</button>
+            <button id="btn-dl-pdf"    class="tb-export-btn">↓ PDF</button>
+          </div>
+        </div>
+
+        <!-- Link popover -->
+        <div id="link-popover" class="hidden flex items-center gap-2 px-3 py-2 border-b border-sky-500/15 bg-base-300/60">
+          <span class="text-xs text-base-content/50">URL:</span>
+          <input id="link-input" type="url" placeholder="https://example.com"
+            class="input input-sm flex-1 bg-base-100 border-base-300 text-sm" />
+          <button id="link-apply" class="btn btn-xs btn-primary">Apply</button>
+          <button id="link-remove" class="btn btn-xs btn-ghost text-error">Remove</button>
+          <button id="link-cancel" class="btn btn-xs btn-ghost">✕</button>
+        </div>
+
+        <!-- Panes -->
+        <div class="grid grid-cols-1 md:grid-cols-2">
+
+          <!-- Left: Rich Text (Tiptap) -->
+          <div class="flex flex-col border-b md:border-b-0 md:border-r border-sky-500/15">
+            <div class="px-3 py-1.5 bg-base-300/30 border-b border-sky-500/10 flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-widest text-sky-400">Rich Text</span>
+              <span class="text-xs text-base-content/25">← paste email, Word, or web content</span>
+            </div>
+            <div id="tiptap-editor"
+              class="flex-1 p-4 min-h-[50vh] md:min-h-[62vh] focus:outline-none overflow-y-auto cursor-text"
+              data-placeholder="Write or paste here — rich text, email, or a Word document…">
+            </div>
+          </div>
+
+          <!-- Right: Markdown source -->
+          <div class="flex flex-col">
+            <div class="px-3 py-1.5 bg-base-300/30 border-b border-sky-500/10 flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-widest text-sky-400">Markdown</span>
+              <span class="text-xs text-base-content/25">← or write / paste Markdown here</span>
+            </div>
+            <textarea id="md-textarea"
+              class="flex-1 p-4 min-h-[50vh] md:min-h-[62vh] bg-transparent font-mono text-sm resize-none focus:outline-none text-base-content/80"
+              placeholder="Or write Markdown here — formatted output appears on the left…"
+              spellcheck="false"></textarea>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Footer ───────────────────────────────────────── -->
+  <div class="mt-8 pt-6 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <p class="text-xs text-base-content/30">Your content never leaves your device.</p>
+    <p class="text-xs text-base-content/25">
+      Editor powered by
+      <a href="https://tiptap.dev" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">Tiptap</a> (MIT) and
+      <a href="https://marked.js.org" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">marked</a> (MIT).
+    </p>
+  </div>
+
+</BaseLayout>
+
+<style>
+  /* Toolbar buttons */
+  .tb-btn {
+    width: 2rem;
+    height: 1.75rem;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    color: oklch(var(--bc) / 0.6);
+    transition: color 0.15s, background-color 0.15s;
+    user-select: none;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  .tb-btn:hover {
+    color: oklch(var(--bc));
+    background-color: oklch(var(--b1) / 0.6);
+  }
+  .tb-btn.is-active {
+    color: #38bdf8;
+    background-color: rgb(14 165 233 / 0.15);
+  }
+  .tb-sep {
+    width: 1px;
+    height: 1.25rem;
+    background-color: oklch(var(--b3));
+    margin: 0 0.125rem;
+    flex-shrink: 0;
+  }
+  .tb-export-btn {
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    color: oklch(var(--bc) / 0.5);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.15s, background-color 0.15s;
+    white-space: nowrap;
+  }
+  .tb-export-btn:hover {
+    color: oklch(var(--bc));
+    background-color: oklch(var(--b1) / 0.6);
+  }
+
+  /* Tiptap editor content styles */
+  #tiptap-editor :global(.ProseMirror) {
+    outline: none;
+    min-height: inherit;
+  }
+  #tiptap-editor :global(.ProseMirror p.is-editor-empty:first-child::before) {
+    content: attr(data-placeholder);
+    color: oklch(var(--bc) / 0.25);
+    pointer-events: none;
+    float: left;
+    height: 0;
+  }
+  #tiptap-editor :global(h1) { font-size: 1.6em; font-weight: 700; margin: 0.5em 0 0.3em; line-height: 1.2; }
+  #tiptap-editor :global(h2) { font-size: 1.3em; font-weight: 700; margin: 0.5em 0 0.3em; line-height: 1.25; }
+  #tiptap-editor :global(h3) { font-size: 1.1em; font-weight: 600; margin: 0.4em 0 0.25em; }
+  #tiptap-editor :global(p)  { margin: 0 0 0.6em; line-height: 1.65; }
+  #tiptap-editor :global(ul) { list-style: disc; padding-left: 1.5em; margin-bottom: 0.6em; }
+  #tiptap-editor :global(ol) { list-style: decimal; padding-left: 1.5em; margin-bottom: 0.6em; }
+  #tiptap-editor :global(li) { margin-bottom: 0.15em; line-height: 1.6; }
+  #tiptap-editor :global(blockquote) { border-left: 3px solid oklch(var(--s)); padding-left: 1em; color: oklch(var(--bc) / 0.6); margin: 0 0 0.6em; font-style: italic; }
+  #tiptap-editor :global(code) { font-family: 'Courier New', monospace; background: oklch(var(--b3)); padding: 0.1em 0.35em; border-radius: 0.25em; font-size: 0.85em; }
+  #tiptap-editor :global(pre) { background: oklch(var(--b3)); padding: 0.75em 1em; border-radius: 0.5em; overflow-x: auto; margin-bottom: 0.6em; }
+  #tiptap-editor :global(pre code) { background: none; padding: 0; }
+  #tiptap-editor :global(table) { border-collapse: collapse; width: 100%; margin-bottom: 0.6em; }
+  #tiptap-editor :global(th), #tiptap-editor :global(td) { border: 1px solid oklch(var(--b3)); padding: 0.4em 0.6em; text-align: left; min-width: 4em; }
+  #tiptap-editor :global(th) { background: oklch(var(--b3) / 0.6); font-weight: 600; }
+  #tiptap-editor :global(.selectedCell) { background: oklch(var(--s) / 0.15); }
+  #tiptap-editor :global(hr) { border: none; border-top: 1px solid oklch(var(--b3)); margin: 1em 0; }
+  #tiptap-editor :global(a) { color: oklch(var(--s)); text-decoration: underline; }
+  #tiptap-editor :global(strong) { font-weight: 700; }
+  #tiptap-editor :global(em) { font-style: italic; }
+</style>
+
+<script>
+  import { Editor } from '@tiptap/core';
+  import StarterKit from '@tiptap/starter-kit';
+  import { Link } from '@tiptap/extension-link';
+  import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table';
+  import TurndownService from 'turndown';
+  import { marked } from 'marked';
+  import jsPDF from 'jspdf';
+
+  // ── DOM refs ──────────────────────────────────────────────
+  const editorEl    = document.getElementById('tiptap-editor')!;
+  const mdTextarea  = document.getElementById('md-textarea') as HTMLTextAreaElement;
+  const toolbar     = document.getElementById('toolbar')!;
+  const linkPopover = document.getElementById('link-popover')!;
+  const linkInput   = document.getElementById('link-input') as HTMLInputElement;
+  const linkApply   = document.getElementById('link-apply')!;
+  const linkRemove  = document.getElementById('link-remove')!;
+  const linkCancel  = document.getElementById('link-cancel')!;
+  const btnCopyMd   = document.getElementById('btn-copy-md')!;
+  const btnCopyHtml = document.getElementById('btn-copy-html')!;
+  const btnDlMd     = document.getElementById('btn-dl-md')!;
+  const btnDlPdf    = document.getElementById('btn-dl-pdf')!;
+
+  // ── Turndown setup ────────────────────────────────────────
+  const td = new TurndownService({
+    headingStyle: 'atx',
+    bulletListMarker: '-',
+    codeBlockStyle: 'fenced',
+  });
+
+  // Preserve table structure in Turndown (GFM tables)
+  td.addRule('tableCell', {
+    filter: ['th', 'td'],
+    replacement: (content) => ` ${content.trim()} |`,
+  });
+  td.addRule('tableRow', {
+    filter: 'tr',
+    replacement: (content, node) => {
+      const el = node as HTMLElement;
+      const isHeader = el.parentElement?.tagName === 'THEAD';
+      const cells = content.trimEnd();
+      const row = `|${cells}\n`;
+      if (isHeader) {
+        const cols = el.querySelectorAll('th, td').length;
+        const sep = `|${' --- |'.repeat(cols)}\n`;
+        return row + sep;
+      }
+      return row;
+    },
+  });
+  td.addRule('table', {
+    filter: 'table',
+    replacement: (content) => `\n${content}\n`,
+  });
+  td.addRule('tableSection', {
+    filter: ['thead', 'tbody', 'tfoot'],
+    replacement: (content) => content,
+  });
+
+  // ── Tiptap setup ──────────────────────────────────────────
+  const editor = new Editor({
+    element: editorEl,
+    extensions: [
+      StarterKit,
+      Link.configure({ openOnClick: false, HTMLAttributes: { rel: 'noopener' } }),
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableCell,
+      TableHeader,
+    ],
+    editorProps: {
+      attributes: {
+        'data-placeholder': editorEl.dataset.placeholder ?? '',
+      },
+    },
+    content: '',
+  });
+
+  // ── Sync state ────────────────────────────────────────────
+  let syncing = false;
+  let lastHtml = '';
+  let debounceTimer: ReturnType<typeof setTimeout>;
+
+  // Left → Right: Tiptap HTML → Markdown via Turndown (skip if content unchanged)
+  editor.on('update', () => {
+    if (syncing) return;
+    const html = editor.getHTML();
+    if (html === lastHtml) return;
+    lastHtml = html;
+    syncing = true;
+    try {
+      mdTextarea.value = td.turndown(html);
+    } finally {
+      syncing = false;
+    }
+  });
+
+  // Right → Left: Markdown → Tiptap via marked (debounced 300 ms)
+  mdTextarea.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      if (syncing) return;
+      syncing = true;
+      try {
+        const html = String(marked.parse(mdTextarea.value));
+        editor.commands.setContent(html, false);
+        lastHtml = editor.getHTML();
+      } finally {
+        syncing = false;
+      }
+    }, 300);
+  });
+
+  // ── Toolbar active state ───────────────────────────────────
+  const toolbarButtons = Array.from(toolbar.querySelectorAll<HTMLButtonElement>('[data-cmd]'));
+
+  const activeChecks: Partial<Record<string, () => boolean>> = {
+    bold:         () => editor.isActive('bold'),
+    italic:       () => editor.isActive('italic'),
+    h1:           () => editor.isActive('heading', { level: 1 }),
+    h2:           () => editor.isActive('heading', { level: 2 }),
+    h3:           () => editor.isActive('heading', { level: 3 }),
+    blockquote:   () => editor.isActive('blockquote'),
+    bulletList:   () => editor.isActive('bulletList'),
+    orderedList:  () => editor.isActive('orderedList'),
+    link:         () => editor.isActive('link'),
+  };
+
+  function updateToolbarState() {
+    toolbarButtons.forEach(btn => {
+      btn.classList.toggle('is-active', activeChecks[btn.dataset.cmd!]?.() ?? false);
+    });
+  }
+
+  editor.on('selectionUpdate', updateToolbarState);
+  editor.on('update', updateToolbarState);
+
+  document.addEventListener('astro:before-swap', () => editor.destroy(), { once: true });
+
+  // ── Toolbar command dispatch ───────────────────────────────
+  toolbar.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-cmd]');
+    if (!btn) return;
+    const cmd = btn.dataset.cmd!;
+
+    switch (cmd) {
+      case 'bold':         editor.chain().focus().toggleBold().run(); break;
+      case 'italic':       editor.chain().focus().toggleItalic().run(); break;
+      case 'h1':           editor.chain().focus().toggleHeading({ level: 1 }).run(); break;
+      case 'h2':           editor.chain().focus().toggleHeading({ level: 2 }).run(); break;
+      case 'h3':           editor.chain().focus().toggleHeading({ level: 3 }).run(); break;
+      case 'blockquote':   editor.chain().focus().toggleBlockquote().run(); break;
+      case 'code':         editor.chain().focus().toggleCode().run(); break;
+      case 'hr':           editor.chain().focus().setHorizontalRule().run(); break;
+      case 'bulletList':   editor.chain().focus().toggleBulletList().run(); break;
+      case 'orderedList':  editor.chain().focus().toggleOrderedList().run(); break;
+      case 'table':
+        editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+        break;
+      case 'link':
+        const existingHref = editor.getAttributes('link').href as string | undefined;
+        linkInput.value = existingHref ?? '';
+        linkPopover.classList.remove('hidden');
+        linkInput.focus();
+        break;
+    }
+  });
+
+  // ── Link popover actions ──────────────────────────────────
+  function applyLink() {
+    const url = linkInput.value.trim();
+    if (url) {
+      editor.chain().focus().setLink({ href: url }).run();
+    }
+    linkPopover.classList.add('hidden');
+  }
+
+  linkApply.addEventListener('click', applyLink);
+  linkInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') applyLink(); });
+  linkRemove.addEventListener('click', () => {
+    editor.chain().focus().unsetLink().run();
+    linkPopover.classList.add('hidden');
+  });
+  linkCancel.addEventListener('click', () => {
+    linkPopover.classList.add('hidden');
+    editor.commands.focus();
+  });
+
+  // ── Export helpers ────────────────────────────────────────
+  async function flashBtn(btn: HTMLElement, msg: string) {
+    const orig = btn.textContent!;
+    btn.textContent = msg;
+    await new Promise(r => setTimeout(r, 1500));
+    btn.textContent = orig;
+  }
+
+  btnCopyMd.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(mdTextarea.value);
+    await flashBtn(btnCopyMd, 'Copied!');
+  });
+
+  btnCopyHtml.addEventListener('click', async () => {
+    const html = await marked.parse(mdTextarea.value);
+    await navigator.clipboard.writeText(html);
+    await flashBtn(btnCopyHtml, 'Copied!');
+  });
+
+  btnDlMd.addEventListener('click', () => {
+    const blob = new Blob([mdTextarea.value], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'document.md'; a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  btnDlPdf.addEventListener('click', async () => {
+    btnDlPdf.textContent = 'Generating…';
+    (btnDlPdf as HTMLButtonElement).disabled = true;
+
+    try {
+      const html = await marked.parse(mdTextarea.value);
+      const container = document.createElement('div');
+      container.style.cssText = 'font-family: Georgia, serif; font-size: 13px; line-height: 1.65; color: #111; max-width: 680px;';
+      container.innerHTML = html;
+
+      container.querySelectorAll('h1').forEach(el => Object.assign((el as HTMLElement).style, { fontSize: '22px', fontWeight: '700', margin: '16px 0 8px' }));
+      container.querySelectorAll('h2').forEach(el => Object.assign((el as HTMLElement).style, { fontSize: '18px', fontWeight: '700', margin: '14px 0 6px', borderBottom: '1px solid #ddd', paddingBottom: '4px' }));
+      container.querySelectorAll('h3').forEach(el => Object.assign((el as HTMLElement).style, { fontSize: '15px', fontWeight: '600', margin: '12px 0 4px' }));
+      container.querySelectorAll('table').forEach(el => Object.assign((el as HTMLElement).style, { borderCollapse: 'collapse', width: '100%', margin: '10px 0', fontSize: '12px' }));
+      container.querySelectorAll('th, td').forEach(el => Object.assign((el as HTMLElement).style, { border: '1px solid #ccc', padding: '5px 8px' }));
+      container.querySelectorAll('th').forEach(el => Object.assign((el as HTMLElement).style, { background: '#f0f0f0', fontWeight: '600' }));
+      container.querySelectorAll('blockquote').forEach(el => Object.assign((el as HTMLElement).style, { borderLeft: '3px solid #aaa', paddingLeft: '12px', color: '#555', margin: '8px 0', fontStyle: 'italic' }));
+      container.querySelectorAll('code').forEach(el => Object.assign((el as HTMLElement).style, { fontFamily: 'monospace', background: '#f4f4f4', padding: '1px 4px', borderRadius: '3px', fontSize: '12px' }));
+      container.querySelectorAll('ul').forEach(el => Object.assign((el as HTMLElement).style, { paddingLeft: '20px', margin: '6px 0' }));
+      container.querySelectorAll('ol').forEach(el => Object.assign((el as HTMLElement).style, { paddingLeft: '20px', margin: '6px 0' }));
+
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      doc.html(container, {
+        callback: (pdf) => {
+          pdf.save('document.pdf');
+          btnDlPdf.textContent = '↓ PDF';
+          (btnDlPdf as HTMLButtonElement).disabled = false;
+        },
+        margin: [15, 15, 15, 15],
+        width: 170,
+        windowWidth: 700,
+      });
+    } catch {
+      btnDlPdf.textContent = '↓ PDF';
+      (btnDlPdf as HTMLButtonElement).disabled = false;
+    }
+  });
+</script>
