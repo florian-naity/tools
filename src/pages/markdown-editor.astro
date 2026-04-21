@@ -48,7 +48,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <span class="tb-sep"></span>
 
           <!-- Lists -->
-          <button data-cmd="bulletList"    class="tb-btn text-base" title="Bullet list">≡</button>
+          <button data-cmd="bulletList" class="tb-btn" title="Bullet list">
+            <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true">
+              <circle cx="2" cy="4.5" r="1.5"/><rect x="5" y="3.75" width="9" height="1.5" rx="0.75"/>
+              <circle cx="2" cy="8"   r="1.5"/><rect x="5" y="7.25" width="9" height="1.5" rx="0.75"/>
+              <circle cx="2" cy="11.5" r="1.5"/><rect x="5" y="10.75" width="9" height="1.5" rx="0.75"/>
+            </svg>
+          </button>
           <button data-cmd="orderedList"   class="tb-btn text-xs"   title="Ordered list">1.</button>
           <span class="tb-sep"></span>
 
@@ -59,8 +65,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
           <!-- Export group (pushed right) -->
           <div class="ml-auto flex flex-wrap gap-1">
+            <button id="btn-copy-rich" class="tb-export-btn">Copy Rich Text</button>
             <button id="btn-copy-md"   class="tb-export-btn">Copy MD</button>
-            <button id="btn-copy-html" class="tb-export-btn">Copy HTML</button>
             <button id="btn-dl-md"     class="tb-export-btn">↓ .md</button>
             <button id="btn-dl-pdf"    class="tb-export-btn">↓ PDF</button>
           </div>
@@ -223,7 +229,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const linkRemove  = document.getElementById('link-remove')!;
   const linkCancel  = document.getElementById('link-cancel')!;
   const btnCopyMd   = document.getElementById('btn-copy-md')!;
-  const btnCopyHtml = document.getElementById('btn-copy-html')!;
+  const btnCopyRich = document.getElementById('btn-copy-rich')!;
   const btnDlMd     = document.getElementById('btn-dl-md')!;
   const btnDlPdf    = document.getElementById('btn-dl-pdf')!;
 
@@ -405,10 +411,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     await flashBtn(btnCopyMd, 'Copied!');
   });
 
-  btnCopyHtml.addEventListener('click', async () => {
-    const html = await marked.parse(mdTextarea.value);
-    await navigator.clipboard.writeText(html);
-    await flashBtn(btnCopyHtml, 'Copied!');
+  btnCopyRich.addEventListener('click', async () => {
+    const html = String(await marked.parse(mdTextarea.value));
+    const blob = new Blob([html], { type: 'text/html' });
+    await navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]);
+    await flashBtn(btnCopyRich, 'Copied!');
   });
 
   btnDlMd.addEventListener('click', () => {
