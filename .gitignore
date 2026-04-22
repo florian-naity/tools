@@ -20,5 +20,9 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# Generated vendor files (copied from node_modules by postinstall — not committed)
+public/vendor/tesseract-worker.min.js
+public/vendor/tesseract-core/
+
 # jetbrains setting folder
 .idea/

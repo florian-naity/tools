@@ -464,8 +464,8 @@ import DropZone from '../components/DropZone.astro';
     let currentPage = 0;
 
     const worker = await createWorker(langs, 1, {
-      workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@6/dist/worker.min.js',
-      corePath:   'https://cdn.jsdelivr.net/npm/tesseract.js-core@6',
+      workerPath: '/vendor/tesseract-worker.min.js',
+      corePath:   '/vendor/tesseract-core',
       langPath:   'https://tessdata.projectnaptha.com/4.0.0',
       logger: (m) => {
         if (m.status === 'loading tesseract core') {

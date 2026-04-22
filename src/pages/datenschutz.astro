@@ -75,20 +75,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <section class="card bg-base-200 border border-base-300 p-6 flex flex-col gap-3">
       <h2 class="text-xs font-bold uppercase tracking-widest text-base-content/50">PDF Text Extractor — External CDN Requests</h2>
       <p>
-        The <strong class="text-base-content">PDF Text Extractor</strong> tool uses Tesseract.js, an OCR engine that runs entirely in your browser. On first use, your browser downloads the following components from external content delivery networks (CDNs):
+        The <strong class="text-base-content">PDF Text Extractor</strong> tool uses Tesseract.js, an OCR engine that runs entirely in your browser. The OCR engine itself (~7 MB) is self-hosted on this server and loaded directly from <strong class="text-base-content">tools.florianabry.me</strong> — no external CDN is contacted for this.
+      </p>
+      <p>
+        However, on first use, your browser downloads <strong class="text-base-content">language training data</strong> (8–20 MB per language, on demand) from an external server:
       </p>
       <ul class="list-disc list-inside flex flex-col gap-1 pl-2">
-        <li><strong class="text-base-content">Tesseract.js engine</strong> (~7 MB) — served by <strong class="text-base-content">jsDelivr</strong> (<code class="text-xs bg-base-300 px-1 py-0.5 rounded font-mono">cdn.jsdelivr.net</code>), operated by Cloudflare</li>
-        <li><strong class="text-base-content">Language training data</strong> (8–20 MB per language, on demand) — served by <strong class="text-base-content">Tesseract.js CDN</strong> (<code class="text-xs bg-base-300 px-1 py-0.5 rounded font-mono">tessdata.projectnaptha.com</code>)</li>
+        <li><strong class="text-base-content">Language training data</strong> — served by <strong class="text-base-content">Tesseract.js CDN</strong> (<code class="text-xs bg-base-300 px-1 py-0.5 rounded font-mono">tessdata.projectnaptha.com</code>)</li>
       </ul>
       <p>
-        When your browser makes these requests, the CDN servers may log your IP address, the date and time of the request, and the file requested. After the initial download, components are cached by your browser and no further CDN requests are made for subsequent uses.
+        When your browser makes this request, the CDN server may log your IP address, the date and time of the request, and the language file requested. After the initial download, language data is cached by your browser — subsequent uses of the same language make no external requests. Your PDF files and extracted text are never sent to this CDN.
       </p>
       <p>
-        The legal basis for these requests is Art. 6(1)(f) GDPR (legitimate interest in providing OCR functionality without a server). No personal data beyond what is technically necessary for the file transfer is processed. Your PDF files and extracted text are never sent to these CDNs.
-      </p>
-      <p>
-        jsDelivr's privacy policy: <a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net" class="text-primary hover:text-accent underline transition-colors" target="_blank" rel="noopener">jsdelivr.com ↗</a>
+        The legal basis for this request is Art. 6(1)(f) GDPR (legitimate interest in providing multilingual OCR functionality without a server-side component).
       </p>
     </section>
 
