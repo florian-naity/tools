@@ -11,6 +11,28 @@ interface Props {
 }
 
 const { title, description = 'Free, private, client-side web tools.' } = Astro.props;
+const canonicalUrl = Astro.url.href;
+const fullTitle = `${title} — tools.florianabry.me`;
+const isHome = Astro.url.pathname === '/';
+
+const jsonLd = isHome
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'tools.florianabry.me',
+      url: 'https://tools.florianabry.me',
+      description,
+    }
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: title,
+      description,
+      url: canonicalUrl,
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Any',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    };
 ---
 
 <html lang="en" data-theme="tools-dark">
@@ -19,8 +41,28 @@ const { title, description = 'Free, private, client-side web tools.' } = Astro.p
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="tools.florianabry.me" />
+
+    <!-- Twitter / X card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- JSON-LD structured data -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title} — tools.florianabry.me</title>
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <title>{fullTitle}</title>
     <ClientRouter />
   </head>
   <body class="min-h-screen flex flex-col bg-base-100 text-base-content">
