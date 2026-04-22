@@ -89,6 +89,74 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <p class="text-xs text-base-content/30">Your files never leave your device.</p>
     <p class="text-xs text-base-content/25">Powered by <a href="https://github.com/cozmo/jsQR" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">jsQR</a> by Cosmo Wolfe (MIT).</p>
   </div>
+  <!-- ─── How it works + FAQ ──────────────────────────────── -->
+  <div class="mt-16 flex flex-col gap-10 border-t border-base-300 pt-10">
+
+    <section>
+      <p class="text-xs font-bold uppercase tracking-widest text-primary mb-5">How it works</p>
+      <ol class="flex flex-col gap-4">
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-primary/15 border border-primary/25 text-xs font-bold text-primary flex items-center justify-center mt-0.5">1</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">Upload an image containing a QR code (PNG, JPG, WebP, or GIF).</p>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-primary/15 border border-primary/25 text-xs font-bold text-primary flex items-center justify-center mt-0.5">2</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">The decoder scans the image instantly and extracts the encoded text — no server involved.</p>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-primary/15 border border-primary/25 text-xs font-bold text-primary flex items-center justify-center mt-0.5">3</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">Copy the result or, if it's a URL, open it directly from the result panel.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p class="text-xs font-bold uppercase tracking-widest text-primary mb-4">Frequently asked questions</p>
+      <div class="flex flex-col divide-y divide-base-300">
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            What image formats are supported?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">PNG, JPG, WebP, and GIF. The QR code must be clearly visible and not too small or heavily distorted.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Can it read QR codes from screenshots?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">Yes — upload a screenshot directly and the decoder will locate and decode the QR code within it.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Does it work offline?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">Yes. Once the page is loaded, decoding runs locally with no internet connection required.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            What if my QR code is not detected?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">Make sure the QR code is sharp and fills a reasonable portion of the image. Cropping the image closer to the QR code before uploading usually helps.</p>
+        </details>
+      </div>
+    </section>
+
+  </div>
+
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "What image formats are supported?", "acceptedAnswer": { "@type": "Answer", "text": "PNG, JPG, WebP, and GIF. The QR code must be clearly visible and not too small or heavily distorted." } },
+      { "@type": "Question", "name": "Can it read QR codes from screenshots?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — upload a screenshot directly and the decoder will locate and decode the QR code within it." } },
+      { "@type": "Question", "name": "Does it work offline?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Once the page is loaded, decoding runs locally with no internet connection required." } },
+      { "@type": "Question", "name": "What if my QR code is not detected?", "acceptedAnswer": { "@type": "Answer", "text": "Make sure the QR code is sharp and fills a reasonable portion of the image. Cropping the image closer to the QR code before uploading usually helps." } }
+    ]
+  }</script>
+
 </BaseLayout>
 
 <script>

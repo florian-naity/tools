@@ -146,6 +146,74 @@ import DropZone from '../components/DropZone.astro';
     </p>
   </div>
 
+  <!-- ─── How it works + FAQ ──────────────────────────────── -->
+  <div class="mt-16 flex flex-col gap-10 border-t border-base-300 pt-10">
+
+    <section>
+      <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-5">How it works</p>
+      <ol class="flex flex-col gap-4">
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-orange-500/15 border border-orange-500/25 text-xs font-bold text-orange-400 flex items-center justify-center mt-0.5">1</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">Select the language(s) of text in your PDF, then upload the file.</p>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-orange-500/15 border border-orange-500/25 text-xs font-bold text-orange-400 flex items-center justify-center mt-0.5">2</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">OCR runs locally in your browser using Tesseract.js and WebAssembly — no data leaves your device.</p>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-orange-500/15 border border-orange-500/25 text-xs font-bold text-orange-400 flex items-center justify-center mt-0.5">3</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">Copy the extracted text, or download it as a clean PDF or Markdown file.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-4">Frequently asked questions</p>
+      <div class="flex flex-col divide-y divide-base-300">
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Which languages are supported?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">English, French, German, Spanish, Italian, Portuguese, Dutch, Russian, Chinese (Simplified), and Japanese.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Does OCR work on non-scanned PDFs?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">The tool first attempts to extract embedded text directly. OCR is only applied to pages that contain scanned or image-based content without selectable text.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Is my data private?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">Yes — OCR runs entirely in your browser using WebAssembly. No files or extracted text are sent to any server at any point.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            How accurate is the OCR?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">Accuracy depends on scan quality. Clean, high-resolution scans typically yield very good results. Handwriting, unusual fonts, or low-quality scans may reduce accuracy.</p>
+        </details>
+      </div>
+    </section>
+
+  </div>
+
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Which languages are supported?", "acceptedAnswer": { "@type": "Answer", "text": "English, French, German, Spanish, Italian, Portuguese, Dutch, Russian, Chinese (Simplified), and Japanese." } },
+      { "@type": "Question", "name": "Does OCR work on non-scanned PDFs?", "acceptedAnswer": { "@type": "Answer", "text": "The tool first attempts to extract embedded text directly. OCR is only applied to pages that contain scanned or image-based content." } },
+      { "@type": "Question", "name": "Is my data private?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — OCR runs entirely in your browser using WebAssembly. No files or extracted text are sent to any server." } },
+      { "@type": "Question", "name": "How accurate is the OCR?", "acceptedAnswer": { "@type": "Answer", "text": "Accuracy depends on scan quality. Clean, high-resolution scans typically yield very good results. Handwriting or low-quality scans may reduce accuracy." } }
+    ]
+  }</script>
+
 </BaseLayout>
 
 <style>

@@ -67,6 +67,74 @@ import ThumbnailGrid from '../components/ThumbnailGrid.astro';
     <p class="text-xs text-base-content/30">Your files never leave your device.</p>
     <p class="text-xs text-base-content/25">Powered by <a href="https://mozilla.github.io/pdf.js/" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">PDF.js</a> (Apache 2.0) · <a href="https://github.com/Hopding/pdf-lib" class="underline hover:text-primary transition-colors" target="_blank" rel="noopener">pdf-lib</a> (MIT).</p>
   </div>
+  <!-- ─── How it works + FAQ ──────────────────────────────── -->
+  <div class="mt-16 flex flex-col gap-10 border-t border-base-300 pt-10">
+
+    <section>
+      <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-5">How it works</p>
+      <ol class="flex flex-col gap-4">
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-orange-500/15 border border-orange-500/25 text-xs font-bold text-orange-400 flex items-center justify-center mt-0.5">1</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">Upload your PDF using the drop zone or drag & drop.</p>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-orange-500/15 border border-orange-500/25 text-xs font-bold text-orange-400 flex items-center justify-center mt-0.5">2</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">Drag page thumbnails into the order you want, or click ✕ to delete pages you don't need.</p>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="shrink-0 w-6 h-6 rounded-full bg-orange-500/15 border border-orange-500/25 text-xs font-bold text-orange-400 flex items-center justify-center mt-0.5">3</span>
+          <p class="text-sm text-base-content/70 leading-relaxed">Click "Download PDF" to save the updated file to your device.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-4">Frequently asked questions</p>
+      <div class="flex flex-col divide-y divide-base-300">
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Can I delete pages as well as reorder them?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">Yes — click the remove button (✕) on any thumbnail to delete that page before downloading.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Will the PDF quality be affected?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">No — pages are copied directly without re-encoding, so the original quality is fully preserved.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Do my files get sent to a server?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">No. All processing happens locally in your browser using PDF.js and pdf-lib. Your files never leave your device.</p>
+        </details>
+        <details class="py-4 group">
+          <summary class="cursor-pointer list-none text-sm font-semibold text-base-content/80 flex justify-between items-center gap-4">
+            Is there a page limit?
+            <span class="group-open:rotate-180 transition-transform shrink-0 text-base-content/30 text-xs">▾</span>
+          </summary>
+          <p class="mt-3 text-sm text-base-content/55 leading-relaxed">No hard limit. Rendering thumbnails for very large PDFs may take a moment depending on your device.</p>
+        </details>
+      </div>
+    </section>
+
+  </div>
+
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Can I delete pages as well as reorder them?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — click the remove button on any thumbnail to delete that page before downloading." } },
+      { "@type": "Question", "name": "Will the PDF quality be affected?", "acceptedAnswer": { "@type": "Answer", "text": "No — pages are copied directly without re-encoding, so the original quality is fully preserved." } },
+      { "@type": "Question", "name": "Do my files get sent to a server?", "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens locally in your browser. Your files never leave your device." } },
+      { "@type": "Question", "name": "Is there a page limit?", "acceptedAnswer": { "@type": "Answer", "text": "No hard limit. Rendering thumbnails for very large PDFs may take a moment depending on your device." } }
+    ]
+  }</script>
+
 </BaseLayout>
 
 <script>
