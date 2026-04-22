@@ -59,11 +59,11 @@ import DropZone from '../components/DropZone.astro';
         <span>Chinese (Simplified)</span>
       </label>
       <!-- dynamic chips injected here by JS -->
-      <div class="relative" id="add-lang-container">
+      <div id="add-lang-container">
         <button id="add-lang-btn" type="button" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border border-dashed border-orange-500/30 text-base-content/40 hover:border-orange-500/60 hover:text-orange-400 transition-colors">
           + Add language
         </button>
-        <div id="lang-dropdown" class="hidden absolute top-full left-0 mt-2 z-50 lang-dropdown">
+        <div id="lang-dropdown" class="hidden lang-dropdown" style="position:fixed;z-index:9999;">
           <input id="lang-search" type="text" placeholder="Search languages…" autocomplete="off" />
           <div id="lang-list"></div>
         </div>
@@ -408,15 +408,30 @@ import DropZone from '../components/DropZone.astro';
     langSearch.value = '';
   }
 
+  // Portal dropdown to <body> so it escapes all stacking contexts
+  document.body.appendChild(langDropdown);
+
+  function positionDropdown() {
+    const rect = addLangBtn.getBoundingClientRect();
+    const W = 240;
+    let left = rect.left;
+    if (left + W > window.innerWidth - 8) left = rect.right - W;
+    langDropdown.style.top  = `${rect.bottom + 8}px`;
+    langDropdown.style.left = `${Math.max(8, left)}px`;
+    langDropdown.style.width = `${W}px`;
+  }
+
   addLangBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const opening = langDropdown.classList.contains('hidden');
+    if (opening) { positionDropdown(); renderLangList(''); }
     langDropdown.classList.toggle('hidden', !opening);
-    if (opening) { renderLangList(''); langSearch.focus(); }
+    if (opening) langSearch.focus();
   });
   langSearch.addEventListener('input', () => renderLangList(langSearch.value));
   document.addEventListener('click', (e) => {
-    if (!addLangContainer.contains(e.target as Node)) langDropdown.classList.add('hidden');
+    if (!addLangContainer.contains(e.target as Node) && !langDropdown.contains(e.target as Node))
+      langDropdown.classList.add('hidden');
   });
 
   // ── Extraction state ───────────────────────────────────
