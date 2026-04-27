@@ -41,6 +41,8 @@ const jsonLd = isHome
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    <meta name="author" content="Florian Abry" />
+    <meta name="robots" content="index, follow" />
 
     <!-- Canonical -->
     <link rel="canonical" href={canonicalUrl} />
@@ -51,6 +53,7 @@ const jsonLd = isHome
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="tools.florianabry.me" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter / X card -->
     <meta name="twitter:card" content="summary" />
@@ -61,6 +64,7 @@ const jsonLd = isHome
     <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <title>{fullTitle}</title>
     <ClientRouter />

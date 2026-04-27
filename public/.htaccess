@@ -2,3 +2,18 @@ ErrorDocument 404 /404.html
 
 AddType text/javascript .mjs
 AddType application/xml .xml
+
+<IfModule mod_headers.c>
+  Header set Content-Security-Policy "\
+    default-src 'self';\
+    script-src 'self' 'unsafe-inline';\
+    style-src 'self' 'unsafe-inline';\
+    img-src 'self' data:;\
+    font-src 'self';\
+    connect-src 'self';\
+    frame-src 'none';\
+    form-action 'self';\
+    base-uri 'self';\
+    object-src 'none';\
+  "
+</IfModule>

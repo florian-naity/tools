@@ -1,0 +1,25 @@
+# tools.florianabry.me
+
+> Free, private, client-side web tools. No data leaves your browser.
+
+## About
+
+A collection of browser-based utilities built and maintained by Florian Abry. All processing happens client-side — no files are uploaded to any server, no data is logged or retained.
+
+## Tools
+
+- **Document to Markdown** — Convert Word and other documents to clean Markdown: https://tools.florianabry.me/document-to-markdown
+- **Images to PDF** — Combine images into a single PDF file: https://tools.florianabry.me/images-to-pdf
+- **Merge PDF** — Merge multiple PDF files into one: https://tools.florianabry.me/merge-pdf
+- **Reorder PDF** — Reorder pages within a PDF: https://tools.florianabry.me/reorder-pdf
+- **PDF to Images** — Extract pages from a PDF as images: https://tools.florianabry.me/pdf-to-images
+- **PDF Text Extractor** — Extract raw text content from a PDF: https://tools.florianabry.me/pdf-text-extractor
+- **Markdown Editor** — Live preview Markdown editor: https://tools.florianabry.me/markdown-editor
+- **QR Generator** — Generate QR codes from text or URLs: https://tools.florianabry.me/qr-generator
+- **QR Reader** — Read and decode QR codes from images: https://tools.florianabry.me/qr-reader
+- **Offline Examiner Tracker** — Exam session tracker that works offline: https://tools.florianabry.me/offline-examiner-tracker
+
+## Contact and Links
+
+- Main site: https://florianabry.me
+- GitHub: https://github.com/florian-naity
