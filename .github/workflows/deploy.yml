@@ -30,7 +30,7 @@ jobs:
           server: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USER }}
           password: ${{ secrets.PROD_PASS }}
-          protocol: ftp
-          port: 21
+          protocol: sftp
+          port: 22
           local-dir: ./dist/
           server-dir: ${{ secrets.PROD_PATH }}
