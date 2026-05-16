@@ -44,7 +44,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </label>
 
           <div id="preview-container" class="hidden flex flex-col items-center gap-2">
-            <img id="preview-img" src="" alt="Uploaded image" class="max-h-48 rounded-lg border border-base-300 object-contain" />
+            <img id="preview-img" alt="Uploaded image" class="max-h-48 rounded-lg border border-base-300 object-contain" />
             <button id="clear-btn" class="btn btn-ghost btn-xs text-base-content/40">Clear</button>
           </div>
         </div>
@@ -182,15 +182,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     resultError.classList.add('hidden');
   }
 
-  function decodeImage(file: File) {
-    const url = URL.createObjectURL(file);
+  let previewUrl: string | null = null;
+
+  function decodeImage(src: string) {
     const img = new Image();
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, img.width, img.height);
-      URL.revokeObjectURL(url);
 
       // @ts-ignore — loaded from public/vendor/jsQR.js
       const result = jsQR(imageData.data, imageData.width, imageData.height);
@@ -214,14 +214,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         resultError.classList.remove('hidden');
       }
     };
-    img.src = url;
+    img.src = src;
   }
 
   function handleFile(file: File) {
     if (!file.type.startsWith('image/')) return;
-    previewImg.src = URL.createObjectURL(file);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(file);
+    previewImg.src = previewUrl;
     previewContainer.classList.remove('hidden');
-    decodeImage(file);
+    decodeImage(previewUrl);
   }
 
   fileInput.addEventListener('change', () => {
@@ -244,7 +246,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   clearBtn.addEventListener('click', () => {
     fileInput.value = '';
-    previewImg.src = '';
+    previewImg.removeAttribute('src');
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+    }
     previewContainer.classList.add('hidden');
     resetResult();
   });
